@@ -1,0 +1,368 @@
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Text&family=Mulish&display=swap');
+
+body {
+    margin: 0;
+    background-color: #F2F2F2;
+}
+.mainBody {
+    margin: 100px auto 150px;
+    max-width: 1325px;
+    width: 94%;
+    min-height: 100vh;
+}
+.footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: white;
+    height: 175px;
+    width: 100%;
+    position: relative;
+    bottom: 0;
+}
+.footerTop {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+}
+.footerBottom {
+    color: #6D6D6D;
+    margin: 0 0 20px 0;
+}
+.footerSocialButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 25px 0 0;
+    color: white;
+    background-color: #3CC5A4;
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+}
+.footerLeft {
+    display: flex;
+    margin: 0 0 0 50px;
+}
+.footerRight {
+    color: #363636;
+    cursor: pointer;
+    margin: 0 50px 0 auto;
+}
+.footerRight:hover {
+    text-underline-offset: 5px;
+    text-decoration: underline;
+}
+.header {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    height: 90px;
+    width: 100%;
+}
+.leftHeader {
+    flex: 1;
+    margin: 0 0 0 50px;
+}
+.middleHeader {
+    flex: 1;
+    margin: -10px 0 0 0;
+}
+.accountButton {
+    color: #6D6D6D;
+    text-decoration: none;
+}
+.title {
+    font-family: 'Crimson Text', serif;
+    font-size: 48px;
+    font-weight: bold;
+    color: #363636;
+    text-decoration: none;
+}
+.openSearchButton {
+    margin: 0 50px 0 0;
+    display: flex;
+    align-items: center;
+    border: none;
+    background: none;
+    font-family: 'Mulish', sans-serif;
+    font-size: 18px;
+    color: #363636;
+    cursor: pointer;
+}
+.search {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    height: 90px;
+    width: 100%;
+}
+.searchButton {
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #3CC5A4;
+    font-size: 30px;
+}
+.searchBox {
+    padding: 0 15px;
+    margin: 0 5px;
+    max-width: 720px;
+    width: 100%;
+    height: 40px;
+    border-radius: 15px;
+    border: none;
+    background-color: #F2F2F2;
+    outline-style: none;
+}
+.closeSearchButton {
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #363636;
+    font-size: 30px;
+}
+.homeHeader {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+.homeNavigation {
+    display: flex;
+    align-items: center;
+    margin: 0 15px 0 auto;
+}
+.homeLeftButton {
+    width: 34px;
+    height: 34px;
+    border: 1px #C4C4C4 solid;
+    margin: 0 10px 0 15px;
+    border-radius: 17px;
+    cursor: pointer;
+    background: none;
+}
+.homeRightButton {
+    width: 34px;
+    height: 34px;
+    border: 1px #3CC5A4 solid;
+    border-radius: 17px;
+    cursor: pointer;
+    background: none;
+}
+.recipesGrid {
+    max-width: 1325px;
+    min-height: 700px;
+    max-height: 1400px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+}
+.recipesRow {
+    display: flex;
+    flex-wrap: wrap;
+}
+.homeIngredientsRow {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 35px 0;
+}
+.ingredientLink {
+    margin: -5px 15px 30px 15px;
+    padding: 0 15px;
+    width: fit-content;
+    height: 40px;
+    background-color: white;
+    border-radius: 10px;
+    text-align: center;
+    line-height: 40px;
+    text-decoration: none;
+    color: #363636;
+}
+.recipeLinkSmall {
+    margin: 0 15px 30px 15px;
+    text-decoration: none;
+}
+.recipeLinkMediumTop {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 1;
+    grid-row-end: 2;
+    margin: 0 15px 30px 0;
+    text-decoration: none;
+}
+.recipeLinkMediumBottom {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 2;
+    grid-row-end: 3;
+    margin: 0 15px 30px 0;
+    text-decoration: none;
+}
+.recipeLinkLarge {
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 1;
+    grid-row-end: 3;
+    margin: 0 15px 30px 15px;
+    text-decoration: none;
+}
+.smallCard {
+    width: 235px;
+    height: 370px;
+    background-color: white;
+    position: relative;
+}
+.smallCardTitle {
+    margin: 10px;
+    word-wrap: normal;
+    font-family: 'Mulish', sans-serif;
+    font-size: 16px;
+    color: #363636;
+}
+.smallCardInformation {
+    display: flex;
+    margin: 0 0 10px 10px;
+    flex-wrap: wrap;
+    font-family: 'Mulish', sans-serif;
+    font-size: 12px;
+    color: #6D6D6D;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+}
+.smallCardRating {
+    margin: 5px 0;
+    padding: 0 8px 0 0;
+    border-right: 1px #6D6D6D solid;
+}
+.smallCardDifficulty {
+    margin: 5px 0;
+    padding: 0 8px;
+    border-right: 1px #6D6D6D solid;
+}
+.smallCardTime {
+    margin: 5px 0;
+    padding: 0 8px;
+}
+.saveRecipeButton {
+    width: 34px;
+    height: 34px;
+    margin: 8px;
+    z-index: 1000px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    border: none;
+    border-radius: 17px;
+    cursor: pointer;
+    background-color: #3CC5A4;
+}
+.homeLink {
+    color: #363636;
+    text-decoration: none;
+}
+.text1 {
+    font-family: 'Mulish', sans-serif;
+    font-size: 32px;
+}
+.text2 {
+    font-family: 'Mulish', sans-serif;
+    font-size: 24px;
+}
+.text3 {
+    font-family: 'Mulish', sans-serif;
+    font-size: 18px;
+}
+.text4 {
+    font-family: 'Mulish', sans-serif;
+    font-size: 16px;
+}
+.text5 {
+    font-family: 'Mulish', sans-serif;
+    font-size: 14px;
+}
+.text6 {
+    font-family: 'Mulish', sans-serif;
+    font-size: 12px;
+}
+.largeCard {
+    width: 525px;
+    height: 670px;
+    background-color: white;
+    position: relative;
+}
+.largeCardTitle {
+    margin: 15px 15px;
+    word-wrap: normal;
+    color: #363636;
+}
+.largeCardInformation {
+    display: flex;
+    margin: 0 0 15px 15px;
+    flex-wrap: wrap;
+    color: #6D6D6D;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+}
+.largeCardRating {
+    margin: 5px 0;
+    padding: 0 8px 0 0;
+    border-right: 1px #6D6D6D solid;
+}
+.largeCardDifficulty {
+    margin: 5px 0;
+    padding: 0 8px;
+    border-right: 1px #6D6D6D solid;
+}
+.largeCardTime {
+    margin: 5px 0;
+    padding: 0 8px;
+}
+.mediumCard {
+    display: flex;
+    width: 740px;
+    height: 320px;
+    background-color: white;
+    position: relative;
+}
+.mediumCardTitle {
+    margin: 15px 15px;
+    word-wrap: normal;
+    color: #363636;
+}
+.mediumCardInformation {
+    display: flex;
+    margin: 0 0 15px 335px;
+    flex-wrap: wrap;
+    color: #6D6D6D;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+}
+.mediumCardRating {
+    margin: 5px 0;
+    padding: 0 8px 0 0;
+    border-right: 1px #6D6D6D solid;
+}
+.mediumCardDifficulty {
+    margin: 5px 0;
+    padding: 0 8px;
+    border-right: 1px #6D6D6D solid;
+}
+.mediumCardTime {
+    margin: 5px 0;
+    padding: 0 8px;
+}
+.accountUserInformation {
+    display: flex;
+    align-items: flex-start;
+    margin: 0 0 25px 0;
+}
+.finished {
+    display: flex;
+    justify-content: center;
+    margin: 25px auto 0;
+}
