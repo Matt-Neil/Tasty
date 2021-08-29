@@ -26,7 +26,7 @@ const FeedRecipes = () => {
                     }
                     setLoaded(true);
                 } else {
-                    history.push('/sign-in');
+                    history.replace('/sign-in');
                 }
             } catch (err) {}
         }
@@ -37,8 +37,6 @@ const FeedRecipes = () => {
             {fetchData(feedRecipes[feedRecipes.length-1].recipe.createdAt)}
         }
     };
-
-    console.log(loaded)
 
     return (
         <div className="mainBody">
@@ -58,7 +56,7 @@ const FeedRecipes = () => {
                         {finished ?
                             <p className="text4">You Have Reached the End!</p>
                             :
-                            null
+                            <p className="text4">Load More!</p>
                         }
                     </div>
                 </>

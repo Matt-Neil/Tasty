@@ -51,7 +51,7 @@ const DinnerRecipes = () => {
                         {finished ?
                             <p className="text4">You Have Reached the End!</p>
                             :
-                            null
+                            <p className="text4">Load More!</p>
                         }
                     </div>
                 </>

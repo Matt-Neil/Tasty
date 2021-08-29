@@ -3,12 +3,16 @@ const mongoose = require('mongoose');
 const IngredientsSchema = new mongoose.Schema({
     ingredient: { 
         type: String,
-        required: [true, "Please enter an ingredient"]
+        required: [true, "Please enter an ingredient"],
+        index: true,
+        text: true
     },
     measurement: { 
-        type: [Number, "Please enter a number"], 
+        type: Number, 
         required: [true, "Please enter a measurement"],
-        min: [0, "Please enter a value greater than 0"]
+        min: [0, "Please enter a value greater than 0"],
+        index: true,
+        text: true
     },
     unit: {
         type: String,
@@ -27,8 +31,11 @@ const ReviewsSchema = new mongoose.Schema({
         required: true 
     },
     rating: { 
-        type: [Number, "Please enter a number"], 
-        required: [true, "Please enter a rating"]
+        type: Number, 
+        required: [true, "Please enter a rating"],
+        default: 1,
+        min: [1, "Please enter a value between 1 and 5"],
+        max: [5, "Please enter a value between 1 and 5"]
     },
     author: { 
         type: mongoose.Schema.Types.ObjectId, 
@@ -39,15 +46,15 @@ const ReviewsSchema = new mongoose.Schema({
 
 const TimeSchema = new mongoose.Schema({
     hr: {
-        type: [Number, "Please enter a number"],
+        type: Number,
         required: [true, "Please enter the hours"],
         min: [0, "Please enter a value greater than 0"]
     },
     min: { 
-        type: [Number, "Please enter a number"], 
+        type: Number, 
         required: [true, "Please enter a minutes"],
         min: [0, "Please enter a value between 0 and 60"],
-        max: [60, "Please enter a value between 0 and 60"],
+        max: [60, "Please enter a value between 0 and 60"]
     }
 }, { _id : false });
 
@@ -60,7 +67,8 @@ const RecipeSchema = new mongoose.Schema({
     title: { 
         type: String, 
         required: [true, "Please enter a title"],
-        index: true
+        index: true,
+        text: true
     },
     date: { 
         type: String, 
@@ -95,7 +103,8 @@ const RecipeSchema = new mongoose.Schema({
     description: { 
         type: String,
         required: [true, "Please enter a description"],
-        index: true
+        index: true,
+        text: true
     },
     difficulty: { 
         type: String,

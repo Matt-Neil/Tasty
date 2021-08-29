@@ -34,14 +34,14 @@ const Header = ({setSearchPhrase}) => {
     const searchFunctionKey = (e) => {
         if (e.key === "Enter" && input !== "") {
             setSearchPhrase(input);
-            history.push("/search");
+            history.push(`/search/${input}`);
         }
     }
 
     const searchFunctionButton = () => {
         if (input !== "") {
             setSearchPhrase(input);
-            history.push("/search");
+            history.push(`/search/${input}`);
         }
     }
 

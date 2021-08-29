@@ -51,7 +51,9 @@ const SignIn = () => {
             setPassword("");
             setSignin(true);
     
-            history.push('/');
+            if (typeof window !== 'undefined') {
+                window.location = `/`
+            }
         }
     }
 
@@ -74,7 +76,9 @@ const SignIn = () => {
             setPassword("");
             setSignin(true);
     
-            history.push('/');
+            if (typeof window !== 'undefined') {
+                window.location = `/`
+            }
         }
     }
     

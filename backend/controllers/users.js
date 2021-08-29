@@ -20,11 +20,7 @@ const handleErrors = (err) => {
 
 exports.getUser = async (req, res, next) => {
     try {
-        const user = await Users.findById(req.params.id)
-                                .populate('followers', 'name')
-                                .populate('following', 'name')
-                                .populate('saved_recipes', 'title picture time rating difficulty')
-                                .populate('created_recipes', 'title picture time rating difficulty');
+        const user = await Users.findById(req.params.id);
 
         if (!user) {
             res.status(404).json({
@@ -46,14 +42,182 @@ exports.getUser = async (req, res, next) => {
     }
 }
 
+exports.getUserFollowers = async (req, res, next) => {
+    try {
+        const followers = await Users.aggregate([
+            { 
+                $match: {
+                    _id: mongoose.Types.ObjectId(req.params.id)
+                }
+            },
+            { 
+                $lookup: { 
+                    from: 'users', 
+                    localField: 'followers', 
+                    foreignField: '_id', 
+                    as: 'followerUsers' 
+                }
+            }, {
+                $unwind: '$followerUsers'
+            }, {
+                $project: {
+                    _id: 0,
+                    'followerUsers._id': 1,
+                    'followerUsers.name': 1,
+                    'followerUsers.picture': 1,
+                    'followerUsers.page': { $lt: ['$followerUsers._id', mongoose.Types.ObjectId(req.query.id)] }
+                    }
+            }, {
+                $match: {
+                    'followerUsers.page': true
+                }
+            }, { 
+                $sort: { 
+                    'followerUsers._id': -1
+                } 
+            }
+        ]).limit(20);
+
+        if (!followers) {
+            res.status(404).json({
+                success: false,
+                error: 'No User Found.'
+            })
+        } else {
+            res.status(201).json({
+                success: true,
+                count: followers.length,
+                data: followers
+            })
+        }
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            error: 'Server Error'
+        })
+    }
+}
+
+exports.getUserFollowing = async (req, res, next) => {
+    try {
+        const following = await Users.aggregate([
+            { 
+                $match: {
+                    _id: mongoose.Types.ObjectId(req.params.id)
+                }
+            },
+            { 
+                $lookup: { 
+                    from: 'users', 
+                    localField: 'following', 
+                    foreignField: '_id', 
+                    as: 'followingUsers' 
+                }
+            }, {
+                $unwind: '$followingUsers'
+            }, {
+                $project: {
+                    _id: 0,
+                    'followingUsers._id': 1,
+                    'followingUsers.name': 1,
+                    'followingUsers.picture': 1,
+                    'followingUsers.page': { $lt: ['$followingUsers._id', mongoose.Types.ObjectId(req.query.id)] }
+                    }
+            }, {
+                $match: {
+                    'followingUsers.page': true
+                }
+            }, { 
+                $sort: { 
+                    'followingUsers._id': -1
+                } 
+            }
+        ]).limit(20);
+
+        if (!following) {
+            res.status(404).json({
+                success: false,
+                error: 'No User Found.'
+            })
+        } else {
+            res.status(201).json({
+                success: true,
+                count: following.length,
+                data: following
+            })
+        }
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            error: 'Server Error'
+        })
+    }
+}
+
+exports.getUserCreated = async (req, res, next) => {
+    try {
+        const created = await Users.aggregate([
+            { 
+                $match: {
+                    _id: mongoose.Types.ObjectId(req.params.id)
+                }
+            },
+            { 
+                $lookup: { 
+                    from: 'recipes', 
+                    localField: 'created_recipes', 
+                    foreignField: '_id', 
+                    as: 'createdRecipes' 
+                }
+            }, {
+                $unwind: '$createdRecipes'
+            }, {
+                $project: {
+                    _id: 0,
+                    'createdRecipes._id': 1,
+                    'createdRecipes.title': 1,
+                    'createdRecipes.picture': 1,
+                    'createdRecipes.time': 1,
+                    'createdRecipes.rating': 1,
+                    'createdRecipes.difficulty': 1,
+                    'createdRecipes.createdAt': 1,
+                    'createdRecipes.page': { $lt: ['$createdRecipes.createdAt', new Date(req.query.date)] }
+                    }
+            }, {
+                $match: {
+                    'createdRecipes.page': true
+                }
+            }, { 
+                $sort: { 
+                    'createdRecipes.createdAt': -1
+                } 
+            }
+        ]).limit(20);
+
+        if (!created) {
+            res.status(404).json({
+                success: false,
+                error: 'No User Found.'
+            })
+        } else {
+            res.status(201).json({
+                success: true,
+                count: created.length,
+                data: created
+            })
+        }
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            error: 'Server Error'
+        })
+    }
+}
+
 exports.getProfile = async (req, res, next) => {
     try {
         if (res.locals.currentUser) {
-            const user = await Users.findById(res.locals.currentUser._id)
-                                .populate('followers', 'name')
-                                .populate('following', 'name')
-                                .populate('saved_recipes', 'title picture time rating difficulty')
-                                .populate('created_recipes', 'title picture time rating difficulty');
+            const user = await Users.findById(res.locals.currentUser._id);
 
             if (!user) {
                 res.status(404).json({
@@ -79,7 +243,259 @@ exports.getProfile = async (req, res, next) => {
     }
 }
 
-exports.updateUser = async (req, res, next) => {
+exports.getProfileFollowers = async (req, res, next) => {
+    try {
+        if (res.locals.currentUser) {
+            const followers = await Users.aggregate([
+                { 
+                    $match: {
+                        _id: mongoose.Types.ObjectId(res.locals.currentUser._id)
+                    }
+                },
+                { 
+                    $lookup: { 
+                        from: 'users', 
+                        localField: 'followers', 
+                        foreignField: '_id', 
+                        as: 'followerUsers' 
+                    }
+                }, {
+                    $unwind: '$followerUsers'
+                }, {
+                    $project: {
+                        _id: 0,
+                        'followerUsers._id': 1,
+                        'followerUsers.name': 1,
+                        'followerUsers.picture': 1,
+                        'followerUsers.page': { $lt: ['$followerUsers._id', mongoose.Types.ObjectId(req.query.id)] }
+                        }
+                }, {
+                    $match: {
+                        'followerUsers.page': true
+                    }
+                }, { 
+                    $sort: { 
+                        'followerUsers._id': -1
+                    } 
+                }
+            ]).limit(20);
+
+            if (!followers) {
+                res.status(404).json({
+                    success: false,
+                    error: 'No User Found.'
+                })
+            } else {
+                res.status(201).json({
+                    success: true,
+                    user: true,
+                    count: followers.length,
+                    data: followers
+                })
+            }
+        } else {
+            res.send({ user: false });
+        }
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            error: 'Server Error'
+        })
+    }
+}
+
+exports.getProfileFollowing = async (req, res, next) => {
+    try {
+        if (res.locals.currentUser) {
+            const following = await Users.aggregate([
+                { 
+                    $match: {
+                        _id: mongoose.Types.ObjectId(res.locals.currentUser._id)
+                    }
+                },
+                { 
+                    $lookup: { 
+                        from: 'users', 
+                        localField: 'following', 
+                        foreignField: '_id', 
+                        as: 'followingUsers' 
+                    }
+                }, {
+                    $unwind: '$followingUsers'
+                }, {
+                    $project: {
+                        _id: 0,
+                        'followingUsers._id': 1,
+                        'followingUsers.name': 1,
+                        'followingUsers.picture': 1,
+                        'followingUsers.page': { $lt: ['$followingUsers._id', mongoose.Types.ObjectId(req.query.id)] }
+                        }
+                }, {
+                    $match: {
+                        'followingUsers.page': true
+                    }
+                }, { 
+                    $sort: { 
+                        'followingUsers._id': -1
+                    } 
+                }
+            ]).limit(20);
+
+            if (!following) {
+                res.status(404).json({
+                    success: false,
+                    error: 'No User Found.'
+                })
+            } else {
+                res.status(201).json({
+                    success: true,
+                    user: true,
+                    count: following.length,
+                    data: following
+                })
+            }
+        } else {
+            res.send({ user: false });
+        }
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            error: 'Server Error'
+        })
+    }
+}
+
+exports.getProfileCreated = async (req, res, next) => {
+    try {
+        if (res.locals.currentUser) {
+            const created = await Users.aggregate([
+                { 
+                    $match: {
+                        _id: mongoose.Types.ObjectId(res.locals.currentUser._id)
+                    }
+                },
+                { 
+                    $lookup: { 
+                        from: 'recipes', 
+                        localField: 'created_recipes', 
+                        foreignField: '_id', 
+                        as: 'createdRecipes' 
+                    }
+                }, {
+                    $unwind: '$createdRecipes'
+                }, {
+                    $project: {
+                        _id: 0,
+                        'createdRecipes._id': 1,
+                        'createdRecipes.title': 1,
+                        'createdRecipes.picture': 1,
+                        'createdRecipes.time': 1,
+                        'createdRecipes.rating': 1,
+                        'createdRecipes.difficulty': 1,
+                        'createdRecipes.createdAt': 1,
+                        'createdRecipes.page': { $lt: ['$createdRecipes.createdAt', new Date(req.query.date)] }
+                        }
+                }, {
+                    $match: {
+                        'createdRecipes.page': true
+                    }
+                }, { 
+                    $sort: { 
+                        'createdRecipes.createdAt': -1
+                    } 
+                }
+            ]).limit(20);
+
+            if (!created) {
+                res.status(404).json({
+                    success: false,
+                    error: 'No User Found.'
+                })
+            } else {
+                res.status(201).json({
+                    success: true,
+                    user: true,
+                    count: created.length,
+                    data: created
+                })
+            }
+        } else {
+            res.send({ user: false });
+        }
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            error: 'Server Error'
+        })
+    }
+}
+
+exports.getProfileSaved = async (req, res, next) => {
+    try {
+        if (res.locals.currentUser) {
+            const saved = await Users.aggregate([
+                { 
+                    $match: {
+                        _id: mongoose.Types.ObjectId(res.locals.currentUser._id)
+                    }
+                },
+                { 
+                    $lookup: { 
+                        from: 'recipes', 
+                        localField: 'saved_recipes', 
+                        foreignField: '_id', 
+                        as: 'savedRecipes' 
+                    }
+                }, {
+                    $unwind: '$savedRecipes'
+                }, {
+                    $project: {
+                        _id: 0,
+                        'savedRecipes._id': 1,
+                        'savedRecipes.title': 1,
+                        'savedRecipes.picture': 1,
+                        'savedRecipes.time': 1,
+                        'savedRecipes.rating': 1,
+                        'savedRecipes.difficulty': 1,
+                        'savedRecipes.createdAt': 1,
+                        'savedRecipes.page': { $lt: ['$savedRecipes.createdAt', new Date(req.query.date)] }
+                        }
+                }, {
+                    $match: {
+                        'savedRecipes.page': true
+                    }
+                }, { 
+                    $sort: { 
+                        'savedRecipes.createdAt': -1
+                    } 
+                }
+            ]).limit(20);
+
+            if (!saved) {
+                res.status(404).json({
+                    success: false,
+                    error: 'No User Found.'
+                })
+            } else {
+                res.status(201).json({
+                    success: true,
+                    user: true,
+                    count: saved.length,
+                    data: saved
+                })
+            }
+        } else {
+            res.send({ user: false });
+        }
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            error: 'Server Error'
+        })
+    }
+}
+
+exports.updateProfile = async (req, res, next) => {
     try {
         if (res.locals.currentUser) {
             const user = await Users.findById(res.locals.currentUser._id);
@@ -230,7 +646,7 @@ exports.updateUser = async (req, res, next) => {
     }
 }
 
-exports.deleteUser = async (req, res, next) => {
+exports.deleteProfile = async (req, res, next) => {
     try {
         const user = await Users.findById(req.params.id);
 
@@ -255,7 +671,7 @@ exports.deleteUser = async (req, res, next) => {
     }
 }
 
-exports.getFeedHome = async (req, res, next) => {
+exports.getFeedShort = async (req, res, next) => {
     try {
         if (res.locals.currentUser) {
             const feedRecipes = await Users.aggregate([
@@ -381,7 +797,6 @@ exports.getFeed = async (req, res, next) => {
             res.send({ user: false });
         }
     } catch (err) {
-        console.log(err)
         res.status(500).json({
             success: false,
             error: 'Server Error'

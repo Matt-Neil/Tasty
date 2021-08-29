@@ -38,7 +38,7 @@ const EditRecipe = () => {
                     setRecipe(response.data.data.recipe);
                     setLoaded(true);
                 } else {
-                    history.push('/');
+                    history.replace('/');
                 }
             } catch (err) {}
         }

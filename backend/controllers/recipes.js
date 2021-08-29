@@ -18,7 +18,7 @@ exports.getRecipe = async (req, res, next) => {
     try {
         const recipe = await Recipes.findById(req.params.id)
                                     .populate('creator', 'name')
-                                    .populate('author', 'name');
+                                    .populate('reviews.author', 'name');
     
         if (!recipe) {
             res.status(404).json({
@@ -26,11 +26,34 @@ exports.getRecipe = async (req, res, next) => {
                 error: "No recipe Found."
             })
         } else {
-            const related = await Recipes.find({ _id: { $ne: recipe._id }, $or: [{ meal: recipe.meal,  $text: { $search: recipe.title }}] })
-                                        .limit(3);
+            const relatedMeal = await Recipes.aggregate([
+                { 
+                    $match: { 
+                        meal: recipe.meal,
+                        _id: {
+                            $ne: recipe._id
+                        }
+                    }
+                }
+            ]).limit(2);
+
+            const relatedText = await Recipes.aggregate([
+                { 
+                    $match: { 
+                        $text: { 
+                            $search: recipe.title
+                        },
+                        _id: {
+                            $ne: recipe._id
+                        }
+                    }
+                }
+            ]).limit(2);
+
+            related = relatedText.concat(relatedMeal);
 
             if (res.locals.currentUser) {
-                if (res.locals.currentUser.created_recipes.some(i => Object.entries(i._id).toString() === Object.entries(recipe._id).toString())) {
+                if (Object.entries(res.locals.currentUser._id).toString() === Object.entries(recipe.creator._id).toString()) {
                     res.status(201).json({
                         success: true,
                         user: true,
@@ -43,6 +66,7 @@ exports.getRecipe = async (req, res, next) => {
                     res.status(201).json({
                         success: true,
                         user: false,
+                        count: related.length,
                         data: {
                             recipe,
                             related
@@ -129,13 +153,17 @@ exports.updateRecipe = async (req, res, next) => {
                         error: "No Recipe Found."
                     })
                 } else {
-                    let updatedRating = 0;
-                    const updatedReviews = recipe.reviews.concat(req.body.review);
+                    const review = {
+                        comment: req.body.review.comment,
+                        rating: req.body.review.rating,
+                        author: res.locals.currentUser._id,
+                        date: req.body.review.date
+                    }
+                    const updatedReviews = recipe.reviews.concat(review);
 
-                    {updatedReviews.map(review => {
-                        updatedRating = updatedRating + review.rating;
-                    })}
-                    updatedRating = updatedRating / updatedReviews.length;
+                    const updatedRating = updatedReviews.reduce(function averageRatings(total, ratings) {
+                        return total + ratings.rating
+                    }, 0) / updatedReviews.length;
         
                     recipe.title = recipe.title;
                     recipe.ingredients = recipe.ingredients;
@@ -144,7 +172,7 @@ exports.updateRecipe = async (req, res, next) => {
                     recipe.steps = recipe.steps;
                     recipe.time = recipe.time;
                     recipe.meal = recipe.meal;
-                    recipe.rating = updatedRating;
+                    recipe.rating = Math.round(updatedRating * 10) / 10;
                     recipe.servings = recipe.servings;
                     recipe.description = recipe.description;
                     recipe.difficulty = recipe.difficulty;
@@ -163,6 +191,7 @@ exports.updateRecipe = async (req, res, next) => {
             res.send({ user: false })
         }
     } catch (err) {
+        console.log(err)
         const errors = handleErrors(err);
         res.status(400).json({errors});
     }
@@ -319,7 +348,7 @@ exports.getDessert = async (req, res, next) => {
     }
 }
 
-exports.getDinnerHome = async (req, res, next) => {
+exports.getDinnerShort = async (req, res, next) => {
     try {
         const dinnerRecipes = await Recipes.find({ meal: 'Dinner' }, 'title picture time rating difficulty')
                                            .sort({ createdAt: -1 })
@@ -338,7 +367,7 @@ exports.getDinnerHome = async (req, res, next) => {
     }
 }
 
-exports.getDessertHome = async (req, res, next) => {
+exports.getDessertShort = async (req, res, next) => {
     try {
         const dessertRecipes = await Recipes.find({ meal: 'Dessert' }, 'title picture time rating difficulty')
                                             .sort({ createdAt: -1 })

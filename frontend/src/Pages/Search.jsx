@@ -1,0 +1,159 @@
+import React, {useState, useEffect} from 'react'
+import {Link, useHistory, useParams} from "react-router-dom"
+import searchAPI from "../API/search"
+import SmallCard from "../Components/Small-Card"
+import UserCard from "../Components/User-Card"
+
+const Search = ({searchPhrase}) => {
+    const [displayUser, setDisplayUser] = useState(false);
+    const [recipes, setRecipes] = useState();
+    const [users, setUsers] = useState();
+    const [loaded, setLoaded] = useState(false);
+    const [finishedUsers, setFinishedUsers] = useState(false);
+    const [finishedRecipes, setFinishedRecipes] = useState(false);
+    const history = useHistory();
+    const urlPhrase = useParams().id;
+
+    useEffect(() => {
+        const fetchDataInitial = async () => {
+            try {
+                if (searchPhrase === null) {
+                    if (urlPhrase) {
+                        const users = await searchAPI.get(`/users?phrase=${urlPhrase}`);
+                        const recipes = await searchAPI.get(`/recipes?phrase=${urlPhrase}`);
+
+                        setRecipes(recipes.data.data);
+                        setUsers(users.data.data);
+                        setLoaded(true);
+                    } else {
+                        history.push("/");
+                    }
+                } else {
+                    const users = await searchAPI.get(`/users?phrase=${searchPhrase}`);
+                    const recipes = await searchAPI.get(`/recipes?phrase=${searchPhrase}`);
+
+                    setRecipes(recipes.data.data);
+                    setUsers(users.data.data);
+                    setLoaded(true);
+                }
+            } catch (err) {}
+        }
+        fetchDataInitial();
+    }, [])
+
+    const fetchDataUsers = async (id) => {
+        if (!finishedUsers) {
+            try {
+                const results = await searchAPI.get(`/users?phrase=${searchPhrase}&id=${id}`);
+    
+                if (results.data.data.length === 0) {
+                    setFinishedUsers(true)
+                }
+
+                setUsers(users => [...users, ...results.data.data]);
+            } catch (err) {}
+        }
+    }
+
+    const fetchDataRecipes = async (id) => {
+        if (!finishedRecipes) {
+            try {
+                const results = await searchAPI.get(`/recipes?phrase=${searchPhrase}&id=${id}`);
+    
+                if (results.data.data.length === 0) {
+                    setFinishedRecipes(true)
+                }
+
+                setRecipes(recipes => [...recipes, ...results.data.data]);
+            } catch (err) {}
+        }
+    }
+
+    window.onscroll = function() {
+        if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight) {
+            if (displayUser && users.length !== 0) {
+                {fetchDataUsers(users[users.length-1]._id)}
+            } 
+            
+            if (!displayUser && recipes.length !== 0) {
+                {fetchDataRecipes(recipes[recipes.length-1]._id)}
+            }
+        }
+    };
+
+    return (
+        <div className="mainBody">
+            {loaded ?
+                <>
+                    {displayUser ?
+                        <>
+                            <div style={{display: "flex"}}>
+                                <p onClick={() => {setDisplayUser(false)}}>Recipes</p>
+                                <p>USERS</p>
+                            </div>
+                            {users.length > 0 ?
+                                <>
+                                    <div className="homeRecipesRow">
+                                        { users && users.map((userReducer, i) => {
+                                            return (
+                                                <Link className={"recipeLinkSmall"} to={`/recipes/${userReducer._id}`} key={i}>
+                                                    <UserCard userReducer={userReducer.name} />
+                                                </Link>
+                                            )
+                                        })}
+                                    </div>
+                                    <div className="finished">
+                                        {finishedUsers ?
+                                            <p className="text4">You Have Reached the End!</p>
+                                            :
+                                            <p className="text4">Load More!</p>
+                                        }
+                                    </div>
+                                </>
+                            :
+                                <div className="finished">
+                                    <p className="text4">No Users Found!</p>
+                                </div>
+                            }
+                        </>
+                    :
+                        <>
+                            <div style={{display: "flex"}}>
+                                <p>RECIPES</p>
+                                <p onClick={() => {setDisplayUser(true)}}>Users</p>
+                            </div>
+                            {recipes.length > 0 ?
+                                <>
+                                    <div className="homeRecipesRow">
+                                        { recipes && recipes.map((recipeReducer, i) => {
+                                            return (
+                                                <Link className={"recipeLinkSmall"} to={`/recipes/${recipeReducer.title}`} key={i}>
+                                                    <SmallCard recipeReducer={recipeReducer} />
+                                                </Link>
+                                            )
+                                        })}
+                                    </div>
+                                    <div className="finished">
+                                        {finishedRecipes ?
+                                            <p className="text4">You Have Reached the End!</p>
+                                            :
+                                            <p className="text4">Load More!</p>
+                                        }
+                                    </div>
+                                </>
+                            :
+                                <div className="finished">
+                                    <p className="text4">No Recipes Found!</p>
+                                </div>
+                            }
+                        </>
+                    }
+                </>
+            :
+                null
+            }
+        </div>
+    )
+}
+
+export default Search
