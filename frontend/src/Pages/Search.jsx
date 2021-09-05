@@ -69,7 +69,7 @@ const Search = ({searchPhrase}) => {
         }
     }
 
-    window.onscroll = function() {
+    const loadMore = () => {
         if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight) {
             if (displayUser && users.length !== 0) {
                 {fetchDataUsers(users[users.length-1]._id)}
@@ -85,11 +85,16 @@ const Search = ({searchPhrase}) => {
         <div className="mainBody">
             {loaded ?
                 <>
+                    {searchPhrase ?
+                        <p className="text2">{"Search results for " + searchPhrase}</p>
+                    :
+                        <p className="text2">{"Search results for " + urlPhrase}</p>
+                    }
                     {displayUser ?
                         <>
-                            <div style={{display: "flex"}}>
-                                <p onClick={() => {setDisplayUser(false)}}>Recipes</p>
-                                <p>USERS</p>
+                            <div className="accountNavigation text3">
+                                <p className="accountNavigationItem" onClick={() => {setDisplayUser(false)}}>Recipes</p>
+                                <p className="accountNavigationItem">USERS</p>
                             </div>
                             {users.length > 0 ?
                                 <>
@@ -106,7 +111,7 @@ const Search = ({searchPhrase}) => {
                                         {finishedUsers ?
                                             <p className="text4">You Have Reached the End!</p>
                                             :
-                                            <p className="text4">Load More!</p>
+                                            <p className="loadMore text4" onClick={() => {loadMore()}}>Load more</p>
                                         }
                                     </div>
                                 </>
@@ -118,9 +123,9 @@ const Search = ({searchPhrase}) => {
                         </>
                     :
                         <>
-                            <div style={{display: "flex"}}>
-                                <p>RECIPES</p>
-                                <p onClick={() => {setDisplayUser(true)}}>Users</p>
+                            <div className="accountNavigation text3">
+                                <p className="accountNavigationItem">RECIPES</p>
+                                <p className="accountNavigationItem" onClick={() => {setDisplayUser(true)}}>Users</p>
                             </div>
                             {recipes.length > 0 ?
                                 <>
@@ -137,7 +142,7 @@ const Search = ({searchPhrase}) => {
                                         {finishedRecipes ?
                                             <p className="text4">You Have Reached the End!</p>
                                             :
-                                            <p className="text4">Load More!</p>
+                                            <p className="loadMore text4" onClick={() => {loadMore()}}>Load more</p>
                                         }
                                     </div>
                                 </>

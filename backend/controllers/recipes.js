@@ -2,8 +2,7 @@ const Recipes = require('../models/Recipes');
 const Users = require('../models/Users');
 
 const handleErrors = (err) => {
-    let errors = { time: "", min: "", hr: "", servings: "", ingredients: "", ingredient: "", measurement: "", unit: "",
-                    rating: "", title: "", steps: "", servings: "", description: "", difficulty: "", meal: "" };
+    let errors = { rating: "", title: "", servings: "", description: "", difficulty: "", meal: "" };
 
     if (err.message.includes('Recipe validation failed')) {
         Object.values(err.errors).forEach(({properties}) => {
@@ -26,37 +25,53 @@ exports.getRecipe = async (req, res, next) => {
                 error: "No recipe Found."
             })
         } else {
-            const relatedMeal = await Recipes.aggregate([
+            const related = await Recipes.aggregate([
                 { 
                     $match: { 
-                        meal: recipe.meal,
+                        $or: [
+                            {
+                                $text: { 
+                                    $search: recipe.title
+                                }
+                            },
+                            {
+                                meal: { 
+                                    $eq: recipe.meal
+                                }
+                            }
+                        ],
                         _id: {
                             $ne: recipe._id
                         }
                     }
                 }
-            ]).limit(2);
-
-            const relatedText = await Recipes.aggregate([
-                { 
-                    $match: { 
-                        $text: { 
-                            $search: recipe.title
-                        },
-                        _id: {
-                            $ne: recipe._id
-                        }
-                    }
-                }
-            ]).limit(2);
-
-            related = relatedText.concat(relatedMeal);
+            ]).limit(4);
 
             if (res.locals.currentUser) {
-                if (Object.entries(res.locals.currentUser._id).toString() === Object.entries(recipe.creator._id).toString()) {
+                if (res.locals.currentUser.saved_recipes.some(i => Object.entries(i._id).toString() === Object.entries(recipe._id).toString()) &&
+                    Object.entries(res.locals.currentUser._id).toString() === Object.entries(recipe.creator._id).toString()) {
                     res.status(201).json({
                         success: true,
-                        user: true,
+                        creator: true,
+                        data: {
+                            recipe,
+                            related
+                        }
+                    })
+                } else if (res.locals.currentUser.saved_recipes.some(i => Object.entries(i._id).toString() === Object.entries(recipe._id).toString())) {
+                    res.status(201).json({
+                        success: true,
+                        saved: true,
+                        creator: false,
+                        data: {
+                            recipe,
+                            related
+                        }
+                    })
+                } else if (Object.entries(res.locals.currentUser._id).toString() === Object.entries(recipe.creator._id).toString()) {
+                    res.status(201).json({
+                        success: true,
+                        creator: true,
                         data: {
                             recipe,
                             related
@@ -65,7 +80,8 @@ exports.getRecipe = async (req, res, next) => {
                 } else {
                     res.status(201).json({
                         success: true,
-                        user: false,
+                        saved: false,
+                        creator: false,
                         count: related.length,
                         data: {
                             recipe,
@@ -76,7 +92,7 @@ exports.getRecipe = async (req, res, next) => {
             } else {
                 res.status(201).json({
                     success: true,
-                    user: false,
+                    creator: false,
                     data: {
                         recipe,
                         related
@@ -107,7 +123,10 @@ exports.addRecipe = async (req, res, next) => {
         }
     } catch (err) {
         const errors = handleErrors(err);
-        res.status(400).json({errors});
+        res.status(400).json({
+            success: false,
+            errors: errors
+        });
     }
 }
 
@@ -117,7 +136,7 @@ exports.updateRecipe = async (req, res, next) => {
             const recipe = await Recipes.findById(req.params.id);
         
             if (req.query.update === "all") {
-                const { title, picture, ingredients, reviews, steps, time, rating, meal, servings, description, difficulty, date, creator } = req.body;
+                const { title, picture, ingredients, steps, time, meal, servings, description, difficulty } = req.body;
         
                 if (!recipe) {
                     res.status(404).json({
@@ -127,17 +146,17 @@ exports.updateRecipe = async (req, res, next) => {
                 } else {
                     recipe.title = title;
                     recipe.ingredients = ingredients;
-                    recipe.reviews = reviews;
+                    recipe.reviews = recipe.reviews;
                     recipe.picture = picture;
                     recipe.steps = steps;
                     recipe.time = time;
                     recipe.meal = meal;
-                    recipe.rating = rating;
+                    recipe.rating = recipe.rating;
                     recipe.servings = servings;
                     recipe.description = description;
                     recipe.difficulty = difficulty;
-                    recipe.date = date;
-                    recipe.creator = creator;
+                    recipe.date = recipe.date;
+                    recipe.creator = recipe.creator;
         
                     await recipe.save();
         
@@ -191,9 +210,11 @@ exports.updateRecipe = async (req, res, next) => {
             res.send({ user: false })
         }
     } catch (err) {
-        console.log(err)
         const errors = handleErrors(err);
-        res.status(400).json({errors});
+        res.status(400).json({
+            success: false,
+            errors: errors
+        });
     }
 }
 

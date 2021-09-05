@@ -3,6 +3,8 @@ import {Link, useParams, useHistory} from "react-router-dom"
 import userAPI from "../API/user"
 import UserCard from "../Components/User-Card"
 import SmallCard from "../Components/Small-Card"
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
 
 const Account = () => {
     const [user, setUser] = useState();
@@ -16,6 +18,8 @@ const Account = () => {
     const [finishedFollowers, setFinishedFollowers] = useState(false);
     const [finishedFollowing, setFinishedFollowing] = useState(false);
     const [loaded, setLoaded] = useState(false);
+    const [followed, setFollowed] = useState();
+    const [mobile, setMobile] = useState(window.innerWidth < 1051);
     const userID = useParams().id;
     const history = useHistory();
 
@@ -28,6 +32,11 @@ const Account = () => {
                 const created = await userAPI.get(`/${userID}/created?date=${new Date().toISOString()}`);
 
                 setUser(user.data.data);
+                if (!user.data.user) {
+                    setFollowed(user.data.followed);
+                } else {
+                    history.replace('/my-profile');
+                }
                 setFollowers(followers.data.data);
                 setFollowing(following.data.data);
                 setCreated(created.data.data);
@@ -37,7 +46,16 @@ const Account = () => {
             }
         }
         fetchDataInitial();
-    }, [userID])
+    }, [])
+
+    useEffect(() => {
+        window.addEventListener("resize", updateMedia);
+        return () => window.removeEventListener("resize", updateMedia);
+    });
+
+    const updateMedia = () => {
+        setMobile(window.innerWidth < 1051);
+    };
 
     const changeSelection = (selection) => {
         switch (selection) {
@@ -106,7 +124,34 @@ const Account = () => {
         }
     }
 
-    window.onscroll = function() {
+    const handleFollow = async () => {
+        if (followed) {
+            try {
+                await userAPI.put(`/${user._id}/followers`, {
+                    remove: true
+                })
+
+                await userAPI.put(`/profile?update=following`, {
+                    id: user._id,
+                    remove: true
+                })
+            } catch (err) {}
+        } else {
+            try {
+                await userAPI.put(`/${user._id}/followers`, {
+                    remove: false
+                })
+
+                await userAPI.put(`/profile?update=following`, {
+                    id: user._id,
+                    remove: false
+                })
+            } catch (err) {}
+        }
+        setFollowed(followed => !followed)
+    }
+
+    const loadMore = () => {
         if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight) {
             if (accountDisplay && created.length !== 0) {
                 {fetchDataCreated(created[created.length-1].createdRecipes.createdAt)}
@@ -120,7 +165,7 @@ const Account = () => {
                 {fetchDataFollowers(followers[followers.length-1].followerUsers._id)}
             }
         }
-    };
+    }
 
     return (
         <div className="mainBody">
@@ -128,27 +173,53 @@ const Account = () => {
                 <>
                     {accountDisplay &&
                         <>
-                            <div style={{display: "flex"}}>
-                                <p>MY ACCOUNT</p>
-                                <p onClick={() => {changeSelection("following")}}>Following</p>
-                                <p onClick={() => {changeSelection("followers")}}>Followers</p>
+                            <div className="accountNavigation text3">
+                                <p className="accountNavigationItem">OVERVIEW</p>
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("following")}}>Following</p>
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("followers")}}>Followers</p>
                             </div>
                             <div className="accountUserInformation">
-                                <img src={"https://via.placeholder.com/250"} alt="User Avatar" style={{marginLeft: 15}} />
+                                <img src={`http://localhost:5000/uploads/${user.picture}`} className="marginText img4" alt="User Avatar" />
                                 <div>
-                                    <p className="text1" style={{marginLeft: 30, marginBottom: 0, marginTop: 0}}>{user.name}</p>
-                                    <p className="text5" style={{marginLeft: 30}}>{"Joined " + user.date}</p>
+                                    {mobile &&
+                                        <div className="accountInformation text4">
+                                            <p className="accountInformationItem">{following.length + " Following"}</p>
+                                            <p className="accountInformationItem">{followers.length + " Followers"}</p>
+                                            <p className="accountInformationItem">{created.length + " Recipes"}</p>
+                                        </div>
+                                    }  
+                                    <div className="accountUserName">
+                                        <p className="accountName text1">{user.name}</p>
+                                        <>
+                                            {followed ?
+                                                <button className="followUserButton"
+                                                        onClick={() => {handleFollow()}}>
+                                                            <FavoriteIcon style={{fontSize: 20, color: "#FFFFFF", marginRight: 7, marginLeft: 7}} />
+                                                            <p className="followUserText text4">Unfollow</p>
+                                                </button>
+                                            :
+                                                <button className="followUserButton"
+                                                        onClick={() => {handleFollow()}}>
+                                                            <FavoriteBorderIcon style={{fontSize: 20, color: "#FFFFFF", marginRight: 7, marginLeft: 7}} />
+                                                            <p className="followUserText text4">Follow</p>
+                                                </button>
+                                            }
+                                        </>
+                                    </div>
+                                    <p className="accountJoined text5">{"Joined " + user.date}</p>
                                 </div>
-                                <div  style={{display: "flex", marginTop: -5, marginLeft: "auto"}}>
-                                    <p className="text4" style={{marginLeft: 30}}>{following.length + " Following"}</p>
-                                    <p className="text4" style={{marginLeft: 30}}>{followers.length + " Followers"}</p>
-                                    <p className="text4" style={{marginLeft: 30}}>{created.length + " Recipes"}</p>
-                                </div>
+                                {!mobile &&
+                                    <div className="accountInformation text4">
+                                        <p className="accountInformationItem">{following.length + " Following"}</p>
+                                        <p className="accountInformationItem">{followers.length + " Followers"}</p>
+                                        <p className="accountInformationItem">{created.length + " Recipes"}</p>
+                                    </div>
+                                }   
                             </div>
-                            <p className="text2" style={{marginLeft: 15, marginTop: 50}}>Their Recipes</p>
+                            <p className="accountCreatedRecipes text2">Their recipes</p>
                             {created.length > 0 ?
                                 <>
-                                    <div className="homeRecipesRow">
+                                    <div className="recipesRow">
                                         { created && created.map((recipeReducer, i) => {
                                             return (
                                                 <Link className={"recipeLinkSmall"} to={`/recipes/${recipeReducer.createdRecipes._id}`} key={i}>
@@ -158,84 +229,82 @@ const Account = () => {
                                         })}
                                     </div>
                                     <div className="finished">
-                                        {finishedFollowers ?
-                                            <p className="text4">You Have Reached the End!</p>
+                                        {finishedCreated ?
+                                            <p className="text4">You have reached the end!</p>
                                             :
-                                            <p className="text4">Load More!</p>
+                                            <p className="loadMore text4" onClick={() => {loadMore()}}>Load more</p>
                                         }
                                     </div>
                                 </>
                             :
                                 <div className="finished">
-                                    <p className="text4">{user.name + " Hasn't Created Any Recipes!"}</p>
+                                    <p className="text4">{user.name + " hasn't created any recipes!"}</p>
                                 </div>
                             }
                         </>
                     }
                     {followingDisplay &&
                         <>
-                            <div style={{display: "flex"}}>
-                                <p onClick={() => {changeSelection("account")}}>My Account</p>
-                                <p>FOLLOWING</p>
-                                <p onClick={() => {changeSelection("followers")}}>Followers</p>
+                            <div className="accountNavigation text3">
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("account")}}>Overview</p>
+                                <p className="accountNavigationItem">FOLLOWING</p>
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("followers")}}>Followers</p>
                             </div>
-                            <p className="text2" style={{marginLeft: 15, marginTop: 50}}>Following</p>
                             {following.length > 0 ?
                                 <>
-                                    <div className="homeRecipesRow">
+                                    <div className="recipesRow">
                                         { following && following.map((userReducer, i) => {
                                             return (
                                                 <Link className={"recipeLinkSmall"} to={`/user/${userReducer.followingUsers._id}`} key={i}>
-                                                    <UserCard userReducer={userReducer.followingUsers.name} />
+                                                    <UserCard userReducer={userReducer.followingUsers} />
                                                 </Link>
                                             )
                                         })}
                                     </div>
                                     <div className="finished">
-                                        {finishedFollowers ?
-                                            <p className="text4">You Have Reached the End!</p>
+                                        {finishedFollowing ?
+                                            <p className="text4">You have reached the end!</p>
                                             :
-                                            <p className="text4">Load More!</p>
+                                            <p className="loadMore text4" onClick={() => {loadMore()}}>Load more</p>
                                         }
                                     </div>
                                 </>
                             :
                                 <div className="finished">
-                                    <p className="text4">{user.name + " Isn't Following Anyone!"}</p>
+                                    <p className="text4">{user.name + " isn't following anyone!"}</p>
                                 </div>
                             }
                         </>
                     }
                     {followersDisplay &&
                         <>
-                            <div style={{display: "flex"}}>
-                                <p onClick={() => {changeSelection("account")}}>My Account</p>
-                                <p onClick={() => {changeSelection("following")}}>Following</p>
-                                <p>FOLLOWERS</p>
+                            <div className="accountNavigation text3">
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("account")}}>Overview</p>
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("following")}}>Following</p>
+                                <p className="accountNavigationItem">FOLLOWERS</p>
                             </div>
-                            <p className="text2" style={{marginLeft: 15, marginTop: 50}}>Followers</p>
                             {followers.length > 0 ?
                                 <>
-                                    <div className="homeRecipesRow">
+                                    <div className="recipesRow">
                                         { followers && followers.map((userReducer, i) => {
                                             return (
                                                 <Link className={"recipeLinkSmall"} to={`/user/${userReducer.followerUsers._id}`} key={i}>
-                                                    <UserCard userReducer={userReducer.followerUsers.name} />
+                                                    <UserCard userReducer={userReducer.followerUsers} />
                                                 </Link>
                                             )
                                         })}
                                     </div>
                                     <div className="finished">
                                         {finishedFollowers ?
-                                            <p className="text4">You Have Reached the End!</p>
+                                            <p className="text4">You have reached the end!</p>
                                             :
-                                            <p className="text4">Load More!</p>
+                                            <p className="loadMore text4" onClick={() => {loadMore()}}>Load more</p>
                                         }
                                     </div>
                                 </>
                             :
                                 <div className="finished">
-                                    <p className="text4">{user.name + " Doesn't Have Any Followers!"}</p>
+                                    <p className="text4">{user.name + " doesn't have any followers!"}</p>
                                 </div>
                             }
                         </>

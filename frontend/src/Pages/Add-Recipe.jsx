@@ -12,13 +12,14 @@ const AddRecipe = () => {
     const [pictureName, setPictureName] = useState("default.png");
     const [steps, setSteps] = useState([""]);
     const [title, setTitle] = useState("");
-    const [ingredients, setIngredients] = useState([{ ingredient: "", measurement: undefined, unit: "none"}]);
-    const [timeMin, setTimeMin] = useState(undefined);
-    const [timeHr, setTimeHr] = useState(undefined);
-    const [servings, setServings] = useState(undefined);
+    const [ingredients, setIngredients] = useState([{ ingredient: "", measurement: "", unit: "none"}]);
+    const [timeMin, setTimeMin] = useState();
+    const [timeHr, setTimeHr] = useState();
+    const [servings, setServings] = useState();
     const [description, setDescription] = useState("");
     const [difficulty, setDifficulty] = useState("Easy");
     const [meal, setMeal] = useState("Dinner");
+    const [errors, setErrors] = useState({ rating: undefined, title: undefined, servings: undefined, description: undefined, difficulty: undefined, meal: undefined });
     const history = useHistory();
 
     useEffect(() => {
@@ -42,76 +43,89 @@ const AddRecipe = () => {
         const formData = new FormData();
         formData.append('picture', pictureFile);
 
-        const uploadResponse = await imageAPI.post("/upload", formData);
+        try {
+            const uploadResponse = await imageAPI.post("/upload", formData);
 
-        setPictureName(uploadResponse.data.data);
+            setPictureName(uploadResponse.data.data);
+        } catch (err) {}
     }
 
     const removePicture = async () => {
-        if (pictureFile !== "default.png") {
-            await imageAPI.put('/remove', {picture: pictureName});
-            setPictureFile("");
-            setPictureName("default.png");
-        }
+        try {
+            if (pictureFile !== "default.png") {
+                await imageAPI.put('/remove', {picture: pictureName});
+                setPictureFile("");
+                setPictureName("default.png");
+            }
+        } catch (err) {}
     }
 
     const createRecipe = async (e) => {
         e.preventDefault();
         e.target.reset();
-        
-        const ingredientsList = [...ingredients];
-        const stepsList = [...steps];
 
-        {ingredients.map((x, i) => {
-            if (x.ingredient === "" && x.measurement === undefined && x.unit === "none") {
-                ingredientsList.splice(i, 1);
-                setIngredients(ingredientsList);
+        try {
+            const ingredientsList = [...ingredients];
+            const stepsList = [...steps];
+
+            if (ingredients.length > 1) {
+                {ingredients.map((x, i) => {
+                    if (x.ingredient === "" && x.measurement === "" && x.unit === "none") {
+                        ingredientsList.splice(i, 1);
+                        setIngredients(ingredientsList);
+                    }
+                })}
             }
-        })}
 
-        {steps.map((x, i) => {
-            if (x === "") {
-                stepsList.splice(i, 1);
-                setSteps(stepsList);
+            if (steps.length > 1) {
+                {steps.map((x, i) => {
+                    if (x === "") {
+                        stepsList.splice(i, 1);
+                        setSteps(stepsList);
+                    }
+                })}
             }
-        })}
-        
-        const updateResponse = await recipeAPI.post(`/recipe`, 
-        {
-            picture: pictureName,
-            steps: steps,
-            rating: 0,
-            title: title,
-            ingredients: ingredients,
-            reviews: [],
-            time: {min: timeMin, hr: timeHr},
-            servings: servings,
-            description: description,
-            difficulty: difficulty,
-            date: moment().format('DD/MM/YYYY'),
-            meal: meal,
-            creator: user._id
-        });
+            
+            const updateResponse = await recipeAPI.post(`/recipe`, 
+            {
+                picture: pictureName,
+                steps: steps,
+                rating: 0,
+                title: title,
+                ingredients: ingredients,
+                reviews: [],
+                time: {min: Number(timeMin), hr: Number(timeHr)},
+                servings: Number(servings),
+                description: description,
+                difficulty: difficulty,
+                date: moment().format('DD/MM/YYYY'),
+                meal: meal,
+                creator: user._id
+            });
 
-        await userAPI.put(`profile?update=created`, {
-            id: updateResponse.data.data
-        })
+            await userAPI.put(`profile?update=created`, {
+                id: updateResponse.data.data
+            })
 
-        setPictureName("");
-        setSteps([""]);
-        setTitle("");
-        setIngredients([{ ingredient: "", measurement: undefined, unit: "none"}]);
-        setTimeMin(undefined);
-        setTimeHr(undefined);
-        setServings(undefined);
-        setDescription("");
-        setDifficulty("");
-        setMeal("");
+            setPictureName("default.png");
+            setSteps([""]);
+            setTitle("");
+            setIngredients([{ ingredient: "", measurement: "", unit: "none"}]);
+            setTimeMin();
+            setTimeHr();
+            setServings();
+            setDescription("");
+            setDifficulty("");
+            setMeal("");
+            setErrors();
 
-        history.push(`/recipes/${updateResponse.data.data}`);
+            history.push(`/recipes/${updateResponse.data.data}`);
+        } catch (err) {
+            setErrors(err.response.data.errors);
+        }
     }
 
-    const handleInputChangeIngredients = (e, index) => {
+    const handleInputIngredients = (e, index) => {
         const list = [...ingredients];
         switch (e.name) {
             case "ingredient":
@@ -129,94 +143,147 @@ const AddRecipe = () => {
             default:
                 break;
         }
-    };
+    }
     
-    const handleRemoveClickIngredients = (index) => {
+    const handleRemoveIngredients = (index) => {
         const list = [...ingredients];
         list.splice(index, 1);
         setIngredients(list);
     };
     
-    const handleAddClickIngredients = () => {
-        setIngredients([...ingredients, { ingredient: "", measurement: undefined, unit: "none" }]);
+    const handleAddIngredients = () => {
+        setIngredients([...ingredients, { ingredient: "", measurement: "", unit: "none" }]);
     };
 
-    const handleInputChangeSteps = (e, index) => {
+    const handleInputSteps = (e, index) => {
         const list = [...steps];
         list[index] = e;
         setSteps(list);
     };
     
-    const handleRemoveClickSteps = (index) => {
+    const handleRemoveSteps = (index) => {
         const list = [...steps];
         list.splice(index, 1);
         setSteps(list);
     };
     
-    const handleAddClickSteps = () => {
+    const handleAddSteps = () => {
         setSteps([...steps, ""]);
     };
 
     return (
         <div className="mainBody">
-            <form method="POST" onSubmit={uploadPicture} encType="multipart/form-data">
-                <div>
-                    <input type="file" name="picture" onChange={e => {setPictureFile(e.target.files[0])}} />
+            <div className="innerBody">
+                <p className="text3">Picture</p>
+                <div className="recipeEditPicture">
+                    <img src={`http://localhost:5000/uploads/${pictureName}`} className="recipeEditDisplayPicture img3" alt="User Avatar" />
+                    <form method="POST" onSubmit={uploadPicture} encType="multipart/form-data">
+                        <div>
+                            <input className="pictureInput" type="file" name="picture" onChange={e => {setPictureFile(e.target.files[0])}} />
+                        </div>
+                        <div>
+                            <input className="pictureUpload text4" type="submit" value="Upload image" />
+                            <button type="button" className="pictureRemove text4" onClick={() => {removePicture()}}>Remove image</button>
+                        </div>
+                    </form>
                 </div>
-                <div>
-                    <input type="submit" value="Upload Image" />
-                </div>
-            </form>
-            <button onClick={() => {removePicture()}}>Remove</button>
-            <form method="POST" onSubmit={createRecipe}>
-                <div>
-                    <input type="text" name="title" placeholder="title" value={title} onChange={e => {setTitle(e.target.value)}} />
-                    <input type="text" name="description" placeholder="description" value={description} onChange={e => {setDescription(e.target.value)}} />
-                    <select name="difficulty" onChange={e => {setDifficulty(e.target.value)}}>
-                        <option value="Easy">Easy</option>
-                        <option value="Medium">Medium</option>
-                        <option value="Hard">Hard</option>
-                    </select>
-                    <input type="text" name="timeHr" placeholder="time hr" value={timeHr} onChange={e => {setTimeHr(e.target.value)}} />
-                    <input type="text" name="timeMin" placeholder="time min" value={timeMin} onChange={e => {setTimeMin(e.target.value)}} />
-                    <input type="text" name="servings" placeholder="servings" value={servings} onChange={e => {setServings(e.target.value)}} />
-                    <select name="meal" onChange={e => {setMeal(e.target.value)}}>
-                        <option value="Dinner">Dinner</option>
-                        <option value="Dessert">Dessert</option>
-                    </select>
-                    {ingredients.map((ingredient, i) => {
-                        return (
-                            <div key={i}>
-                                <input type="text" name="ingredient" placeholder="ingredient" value={ingredient.ingredient} onChange={e => handleInputChangeIngredients(e.target, i)} />
-                                <input type="text" name="measurement" placeholder="measurement" value={ingredient.measurement} onChange={e => handleInputChangeIngredients(e.target, i)} />
-                                <select name="unit" onChange={e => handleInputChangeIngredients(e.target, i)}>
-                                    <option value="none">none</option>
-                                    <option value="ml">ml</option>
-                                    <option value="l">l</option>
-                                    <option value="g">g</option>
-                                    <option value="kg">kg</option>
-                                    <option value="tbsp">tbsp</option>
-                                    <option value="tsp">tsp</option>
-                                </select>
-                                {ingredients.length !== 1 && <button type="button" onClick={() => handleRemoveClickIngredients(i)}>Remove</button>}
-                                {ingredients.length - 1 === i && <button type="button" onClick={handleAddClickIngredients}>Add</button>}
+                <form method="POST" onSubmit={createRecipe}>
+                    <div>
+                        <p className="text3">Title</p>
+                        <div className="recipeEditPairRow">
+                            <input className="textInputRecipe text5" type="text" name="title" placeholder="Title" maxLength="100" value={title} onChange={e => {setTitle(e.target.value)}} />
+                            {errors.title && <p className="displayError text5">{errors.title}</p> }
+                        </div>
+                        <p className="text3">Description</p>
+                        <div className="recipeEditPairRow">
+                            <textarea className="textareaInput textInputRecipe text5" type="text" name="description" placeholder="Description" maxLength="1000" rows="8" value={description} autoFocus onChange={e => {setDescription(e.target.value)}} />
+                            {errors.description && <p className="displayError text5">{errors.description}</p> }
+                        </div>
+                        <div className="recipeEditRow">
+                            <div className="recipeEditRowDifficulty">
+                                <p className="text3">Difficulty</p>
+                                <div className="recipeEditPairRow">
+                                    <select className="textInputRecipe text5" name="difficulty" onChange={e => {setDifficulty(e.target.value)}}>
+                                        <option value="Easy">Easy</option>
+                                        <option value="Medium">Medium</option>
+                                        <option value="Hard">Hard</option>
+                                    </select>
+                                    {errors.difficulty && <p className="displayError text5">{errors.difficulty}</p> }
+                                </div>
                             </div>
-                        )
-                    })}
-                    {steps.map((step, i) => {
-                        return (
-                            <div key={i}>
-                                <input type="text" name="steps" placeholder="steps" value={step} onChange={e => handleInputChangeSteps(e.target.value, i)} />
-                                {steps.length !== 1 && <button type="button" onClick={() => handleRemoveClickSteps(i)}>Remove</button>}
-                                {steps.length - 1 === i && <button type="button" onClick={handleAddClickSteps}>Add</button>}
+                            <div className="recipeEditRowMeal">
+                                <p className="text3">Meal type</p>
+                                <div className="recipeEditPairRow">   
+                                    <select className="textInputRecipe text5" name="meal" onChange={e => {setMeal(e.target.value)}}>
+                                        <option value="Dinner">Dinner</option>
+                                        <option value="Dessert">Dessert</option>
+                                    </select>
+                                    {errors.meal && <p className="displayError text5">{errors.meal}</p> } 
+                                </div>
                             </div>
-                        )
-                    })}
-                </div>
-                <div>
-                    <input type="submit" value="Create Recipe" />
-                </div>
-            </form>
+                            <div className="recipeEditRowServings">
+                                <p className="text3">Number of servings</p>
+                                <div className="recipeEditPairRow">
+                                    <input className="textInputRecipe text5" type="text" name="servings" placeholder="Servings" maxLength="2" value={servings} autoFocus onChange={e => {setServings(e.target.value)}} />
+                                    {errors.servings && <p className="displayError text5">{errors.servings}</p> }
+                                </div>
+                            </div>
+                        </div>
+                        <p className="text3">Cooking time</p>
+                        <p className="text5">(Hours, Minutes)</p>
+                        <div className="recipeEditPairRow">
+                            <input className="textInputRecipe text5" type="text" name="timeHr" placeholder={"Hours"} value={timeHr} autoFocus onChange={e => {setTimeHr(e.target.value)}} />
+                            <input className="textInputRecipe text5" type="text" name="timeMin" placeholder={"Minutes"} value={timeMin} onChange={e => {setTimeMin(e.target.value)}} />
+                        </div>
+                        <p className="text3">Ingredients</p>
+                        <p className="text5">(Ingredient, Measurement, Unit)</p>
+                        <div className="recipeEditPairRow">
+                            <div style={{width: "100%"}}>
+                                {ingredients.map((ingredient, i) => {
+                                    return (
+                                        <div key={i}>
+                                            <div className="recipeEditRowIngredients">
+                                                <input className="recipeEditRowIngredient textInputRecipe text5" type="text" name="ingredient" placeholder="Ingredient" maxLength="125" value={ingredient.ingredient} onChange={e => handleInputIngredients(e.target, i)} />
+                                                <input className="recipeEditRowMeasurement textInputRecipe text5" type="text" name="measurement" placeholder="Measurement" maxLength="5" value={ingredient.measurement} onChange={e => handleInputIngredients(e.target, i)} />
+                                                <select className="recipeEditRowUnit textInputRecipe text5" name="unit" onChange={e => handleInputIngredients(e.target, i)}>
+                                                    <option value="">none</option>
+                                                    <option value="ml">ml</option>
+                                                    <option value="l">l</option>
+                                                    <option value="g">g</option>
+                                                    <option value="kg">kg</option>
+                                                    <option value="tbsp">tbsp</option>
+                                                    <option value="tsp">tsp</option>
+                                                </select>
+                                                {ingredients.length !== 1 && <button className="recipeRemoveItem text4" type="button" onClick={() => handleRemoveIngredients(i)}>Remove</button>}
+                                            </div>
+                                            {ingredients.length - 1 === i && <button className="recipeAddIngredient text4" type="button" onClick={handleAddIngredients}>Add ingredient</button>}
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                        <p className="text3">Steps</p>
+                        <div className="recipeEditPairRow">
+                            <div style={{width: "100%"}}>   
+                                {steps.map((step, i) => {
+                                    return (
+                                        <div key={i}>
+                                            <div className="recipeEditRowSteps">
+                                                <textarea className="textareaInput recipeEditRowStep textInputRecipe text5" type="text" name="steps" placeholder="Instruction" maxLength="500" rows="5" value={step} onChange={e => handleInputSteps(e.target.value, i)} />
+                                                {steps.length !== 1 && <button className="recipeRemoveItem text4" type="button" onClick={() => handleRemoveSteps(i)}>Remove</button>}
+                                            </div>
+                                            {steps.length - 1 === i && <button className="recipeAddStep text4" type="button" onClick={handleAddSteps}>Add instruction</button>}
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <input className="recipeCreate text4" type="submit" value="Create recipe" />
+                    </div>
+                </form>
+            </div>
         </div>
     )
 }

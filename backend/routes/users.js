@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { getUser, updateProfile, deleteProfile, getFeed, getFeedShort, getProfile, getProfileCreated, getProfileFollowers, getProfileFollowing,
-    getProfileSaved, getUserCreated, getUserFollowers, getUserFollowing } = require('../controllers/users');
+    getProfileSaved, getUserCreated, getUserFollowers, getUserFollowing, updateUserFollowers } = require('../controllers/users');
 
 router.route('/feed').get(getFeed);
 
@@ -17,7 +17,7 @@ router.route('/profile/created').get(getProfileCreated);
 
 router.route('/short/feed').get(getFeedShort);
 
-router.route('/:id/followers').get(getUserFollowers);
+router.route('/:id/followers').get(getUserFollowers).put(updateUserFollowers);
 
 router.route('/:id/following').get(getUserFollowing);
 

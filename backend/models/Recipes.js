@@ -3,14 +3,13 @@ const mongoose = require('mongoose');
 const IngredientsSchema = new mongoose.Schema({
     ingredient: { 
         type: String,
-        required: [true, "Please enter an ingredient"],
+        required: true,
         index: true,
         text: true
     },
     measurement: { 
-        type: Number, 
-        required: [true, "Please enter a measurement"],
-        min: [0, "Please enter a value greater than 0"],
+        type: String, 
+        required: true,
         index: true,
         text: true
     },
@@ -47,12 +46,12 @@ const ReviewsSchema = new mongoose.Schema({
 const TimeSchema = new mongoose.Schema({
     hr: {
         type: Number,
-        required: [true, "Please enter the hours"],
+        required: [true, "Please enter a valid number"],
         min: [0, "Please enter a value greater than 0"]
     },
     min: { 
-        type: Number, 
-        required: [true, "Please enter a minutes"],
+        type: Number,
+        required: [true, "Please enter a valid number"],
         min: [0, "Please enter a value between 0 and 60"],
         max: [60, "Please enter a value between 0 and 60"]
     }
@@ -93,11 +92,11 @@ const RecipeSchema = new mongoose.Schema({
     },
     time: { 
         type: TimeSchema,
-        required: [true, "Please enter a time"]
+        required: true
     },
     servings: { 
-        type: [Number, "Please enter a number"],
-        required: [true, "Please enter the number of servings"],
+        type: Number,
+        required: [true, "Please enter a valid number of servings"],
         min: [0, "Please enter a value greater than 0"]
     },
     description: { 
@@ -112,7 +111,9 @@ const RecipeSchema = new mongoose.Schema({
     },
     meal: {
         type: String,
-        required: [true, "Please enter the meal"]
+        required: [true, "Please enter the meal"],
+        index: true,
+        text: true
     },
     rating: {
         type: Number,

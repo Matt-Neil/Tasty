@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import {useParams, useHistory} from "react-router-dom"
+import {Link, useParams, useHistory} from "react-router-dom"
 import recipeAPI from "../API/recipes"
 import imageAPI from "../API/image"
 
@@ -9,7 +9,7 @@ const EditRecipe = () => {
     const [pictureName, setPictureName] = useState("");
     const [steps, setSteps] = useState([""]);
     const [title, setTitle] = useState("");
-    const [ingredients, setIngredients] = useState([{ ingredient: "", measurement: null, unit: ""}]);
+    const [ingredients, setIngredients] = useState([{ ingredient: "", measurement: "", unit: ""}]);
     const [timeMin, setTimeMin] = useState("");
     const [timeHr, setTimeHr] = useState("");
     const [servings, setServings] = useState("");
@@ -26,6 +26,7 @@ const EditRecipe = () => {
     const [editDescription, setEditDescription] = useState(false);
     const [editDifficulty, setEditDifficulty] = useState(false);
     const [editMeal, setEditMeal] = useState(false);
+    const [errors, setErrors] = useState({ rating: undefined, title: undefined, servings: undefined, description: undefined, difficulty: undefined, meal: undefined });
     const recipeID = useParams().id;
     const history = useHistory();
 
@@ -34,7 +35,7 @@ const EditRecipe = () => {
             try {
                 const response = await recipeAPI.get(`/recipe/${recipeID}`);
 
-                if (response.data.user) {
+                if (response.data.creator) {
                     setRecipe(response.data.data.recipe);
                     setLoaded(true);
                 } else {
@@ -48,7 +49,7 @@ const EditRecipe = () => {
     useEffect(() => {
         if (loaded) {
             if (recipe.ingredients.length === 0) {
-                setIngredients([{ ingredient: "", measurement: undefined, unit: ""}]);
+                setIngredients([{ ingredient: "", measurement: "", unit: ""}]);
             } else {
                 setIngredients(recipe.ingredients);
             }
@@ -73,74 +74,79 @@ const EditRecipe = () => {
     const uploadPicture = async (e) => {
         e.preventDefault();
 
-        const formData = new FormData();
-        formData.append('picture', pictureFile);
+        try {
+            const formData = new FormData();
+            formData.append('picture', pictureFile);
 
-        const uploadResponse = await imageAPI.post("/upload", formData);
+            const uploadResponse = await imageAPI.post("/upload", formData);
 
-        setPictureName(uploadResponse.data.data);
+            setPictureName(uploadResponse.data.data);
+        } catch (err) {}
     }
 
     const removePicture = async () => {
-        if (pictureFile !== "") {
-            await imageAPI.put('/remove', {picture: pictureName});
-            setPictureFile("");
-            setPictureName(recipe.picture);
-        }
+        try {
+            if (pictureFile !== "" && recipe.picture !== "default.png") {
+                await imageAPI.put('/remove', {picture: recipe.picture});
+                setPictureFile("");
+                setPictureName(recipe.picture);
+            }
+        } catch (err) {}
     }
 
     const updateRecipe = async (e) => {
         e.preventDefault();
+        e.target.reset();
 
-        const ingredientsList = [...ingredients];
-        const stepsList = [...steps];
+        try {
+            const ingredientsList = [...ingredients];
+            const stepsList = [...steps];
 
-        if (pictureName !== recipe.picture) {
-            await imageAPI.put('/remove', {picture: recipe.picture});
+            if (pictureName !== recipe.picture) {
+                await imageAPI.put('/remove', {picture: recipe.picture});
+            }
+
+            {ingredients.map((x, i) => {
+                if (x.ingredient === "" && x.measurement === "" && x.unit === "") {
+                    ingredientsList.splice(i, 1);
+                    setIngredients(ingredientsList);
+                }
+            })}
+
+            {steps.map((x, i) => {
+                if (x === "") {
+                    stepsList.splice(i, 1);
+                    setSteps(stepsList);
+                }
+            })}
+
+            await recipeAPI.put(`/recipe/${recipeID}?update=all`, 
+            {
+                picture: pictureName,
+                steps: steps,
+                title: title,
+                ingredients: ingredients,
+                time: {min: timeMin, hr: timeHr},
+                servings: servings,
+                description: description,
+                difficulty: difficulty,
+                meal: meal
+            });
+
+            setEditPicture(false);
+            setEditSteps(false);
+            setEditTitle(false);
+            setEditIngredients(false);
+            setEditTime(false);
+            setEditServings(false);
+            setEditDescription(false);
+            setEditDifficulty(false);
+            setEditMeal(false);
+
+            history.push(`/recipes/${recipeID}`)
+        } catch (err) {
+            setErrors(err.response.data.errors);
         }
-
-        {ingredients.map((x, i) => {
-            if (x.ingredient === "" && x.measurement === null && x.unit === "") {
-                ingredientsList.splice(i, 1);
-                setIngredients(ingredientsList);
-            }
-        })}
-
-        {steps.map((x, i) => {
-            if (x === "") {
-                stepsList.splice(i, 1);
-                setSteps(stepsList);
-            }
-        })}
-
-        await recipeAPI.put(`/recipe/${recipeID}?update=all`, 
-        {
-            picture: pictureName,
-            steps: steps,
-            rating: recipe.rating,
-            title: title,
-            ingredients: ingredients,
-            reviews: recipe.reviews,
-            time: {min: timeMin, hr: timeHr},
-            servings: servings,
-            description: description,
-            difficulty: difficulty,
-            date: recipe.date,
-            meal: meal,
-            creator: recipe.creator
-        });
-
-        setEditPicture(false);
-        setEditSteps(false);
-        setEditTitle(false);
-        setEditIngredients(false);
-        setEditTime(false);
-        setEditServings(false);
-        setEditDescription(false);
-        setEditDifficulty(false);
-        setEditMeal(false);
-
-        history.push(`/recipes/${recipeID}`)
     }
 
     const handleInputIngredients = (e, index) => {
@@ -168,7 +174,7 @@ const EditRecipe = () => {
     }
     
     const handleAddIngredients = () => {
-        setIngredients([...ingredients, { ingredient: "", measurement: null, unit: "" }]);
+        setIngredients([...ingredients, { ingredient: "", measurement: "", unit: "" }]);
     }
 
     const handleInputSteps = (e, index) => {
@@ -221,7 +227,7 @@ const EditRecipe = () => {
                 break;
             case "ingredients":
                 if (recipe.ingredients.length === 0) {
-                    setIngredients([{ ingredient: "", measurement: null, unit: ""}]);
+                    setIngredients([{ ingredient: "", measurement: "", unit: ""}]);
                 } else {
                     setIngredients(recipe.ingredients);
                 }
@@ -253,165 +259,202 @@ const EditRecipe = () => {
     return (
         <div className="mainBody">
             {loaded ?
-                <>
+                <div className="innerBody">
+                    <p className="text3">Picture</p>
                     {editPicture ?
-                        <>
+                        <div className="recipeEditPicture">
+                            <img src={`http://localhost:5000/uploads/${pictureName}`} className="img3" alt="User Avatar" />
                             <form method="POST" onSubmit={uploadPicture} encType="multipart/form-data">
                                 <div>
-                                    <input type="file" name="picture" onChange={e => {setPictureFile(e.target.files[0])}} />
+                                    <input className="pictureInput" type="file" name="picture" onChange={e => {setPictureFile(e.target.files[0])}} />
                                 </div>
                                 <div>
-                                    <input type="submit" value="Upload Image" />
+                                    <input className="pictureUpload text4" type="submit" value="Upload image" />
+                                    <button type="button" className="pictureRemove text4" onClick={() => {removePicture()}}>Remove image</button>
                                 </div>
                             </form>
-                            <button onClick={() => {removePicture()}}>Remove</button>
-                            <button type="button" onClick={() => {cancelEdit("picture")}}>Cancel</button>
-                        </>
+                            <button className="recipePictureCancel text4" type="button" onClick={() => {cancelEdit("picture")}}>Cancel</button>
+                        </div>
                     :
-                        <>
-                            <img />
-                            <button type="button" onClick={() => {setEditPicture(true)}}>Edit</button>
-                        </>
+                        <div className="recipeEditPairRow">
+                            <img src={`http://localhost:5000/uploads/${pictureName}`} className="img3" style={{marginRight: 15}} alt="User Avatar" />
+                            <button className="recipeEdit text4" type="button" onClick={() => {setEditPicture(true)}}>Edit</button>
+                        </div>
                     }
-                    
-                    <form method="PUT" onSubmit={updateRecipe}>
+                    <form style={{marginTop: 50}} method="PUT" onSubmit={updateRecipe}>
                         <div>
+                            <p className="text3">Title</p>
                             {editTitle ?
-                                <>
-                                    <input type="text" name="title" placeholder="title" value={title} onChange={e => {setTitle(e.target.value)}} />
-                                    <button type="button" onClick={() => {cancelEdit("title")}}>Cancel</button>
-                                </>
+                                <div className="recipeEditPairRow">
+                                    <input className="textInputRecipe text5" type="text" name="title" placeholder="Title" maxLength="100" value={title} autoFocus onChange={e => {setTitle(e.target.value)}} />
+                                    {errors.title && <p className="displayError text5">{errors.title}</p> }
+                                    <button className="recipeCancel text4" type="button" onClick={() => {cancelEdit("title")}}>Cancel</button>
+                                </div>
                             :
-                                <>
-                                    <p>{title}</p>
-                                    <button type="button" onClick={() => {setEditTitle(true)}}>Edit</button>
-                                </>
+                                <div className="recipeEditPairRow">
+                                    <p className="textDisplayRecipe text5">{title}</p>
+                                    <button className="recipeEdit text4" type="button" onClick={() => {setEditTitle(true)}}>Edit</button>
+                                </div>
                             }
+                            <p className="text3">Description</p>
                             {editDescription ?
-                                <>
-                                    <input type="text" name="description" placeholder="description" value={description} onChange={e => {setDescription(e.target.value)}} />
-                                    <button type="button" onClick={() => {cancelEdit("description")}}>Cancel</button>
-                                </>
+                                <div className="recipeEditPairRow">
+                                    <textarea className="textareaInput textInputRecipe text5" type="text" name="description" placeholder="Description" maxLength="1000" rows="8" value={description} autoFocus onChange={e => {setDescription(e.target.value)}} />
+                                    {errors.description && <p className="displayError text5">{errors.description}</p> }
+                                    <button className="recipeCancel text4" type="button" onClick={() => {cancelEdit("description")}}>Cancel</button>
+                                </div>
                             :
-                                <>
-                                    <p>{description}</p>
-                                    <button type="button" onClick={() => {setEditDescription(true)}}>Edit</button>
-                                </>
+                                <div className="recipeEditPairRow">
+                                    <p className="textDisplayRecipe text5">{description}</p>
+                                    <button className="recipeEdit text4" type="button" onClick={() => {setEditDescription(true)}}>Edit</button>
+                                </div>
                             }
-                            {editDifficulty ?
-                                <>
-                                    <select name="difficulty" onChange={e => {setDifficulty(e.target.value)}}>
-                                        <option value="Easy">Easy</option>
-                                        <option value="Medium">Medium</option>
-                                        <option value="Hard">Hard</option>
-                                    </select>
-                                    <button type="button" onClick={() => {cancelEdit("difficulty")}}>Cancel</button>
-                                </>
-                            :
-                                <>
-                                    <p>{difficulty}</p>
-                                    <button type="button" onClick={() => {setEditDifficulty(true)}}>Edit</button>
-                                </>
-                            }
+                            <div className="recipeEditRow">
+                                <div className="recipeEditRowDifficulty">
+                                    <p className="text3">Difficulty</p>
+                                    {editDifficulty ?
+                                        <div className="recipeEditPairRow">
+                                            <select className="textInputRecipe text5" name="difficulty" onChange={e => {setDifficulty(e.target.value)}}>
+                                                <option value="Easy">Easy</option>
+                                                <option value="Medium">Medium</option>
+                                                <option value="Hard">Hard</option>
+                                            </select>
+                                            {errors.difficulty && <p className="displayError text5">{errors.difficulty}</p> }
+                                            <button className="recipeCancel text4" type="button" onClick={() => {cancelEdit("difficulty")}}>Cancel</button>
+                                        </div>
+                                    :
+                                        <div className="recipeEditPairRow">
+                                            <p className="textDisplayRecipe text5">{difficulty}</p>
+                                            <button className="recipeEdit text4" type="button" onClick={() => {setEditDifficulty(true)}}>Edit</button>
+                                        </div>
+                                    }
+                                </div>
+                                <div className="recipeEditRowMeal">
+                                    <p className="text3">Meal type</p>
+                                    {editMeal ?
+                                        <div className="recipeEditPairRow">   
+                                            <select className="textInputRecipe text5" name="meal" onChange={e => {setMeal(e.target.value)}}>
+                                                <option value="Dinner">Dinner</option>
+                                                <option value="Dessert">Dessert</option>
+                                            </select>
+                                            {errors.meal && <p className="displayError text5">{errors.meal}</p> } 
+                                            <button className="recipeCancel text4" type="button" onClick={() => {cancelEdit("meal")}}>Cancel</button>
+                                        </div>
+                                    :
+                                        <div className="recipeEditPairRow">
+                                            <p className="textDisplayRecipe text5">{meal}</p>
+                                            <button className="recipeEdit text4" type="button" onClick={() => {setEditMeal(true)}}>Edit</button>
+                                        </div>
+                                    }
+                                </div>
+                                <div className="recipeEditRowServings">
+                                    <p className="text3">Number of servings</p>
+                                    {editServings ?
+                                        <div className="recipeEditPairRow">
+                                            <input className="textInputRecipe text5" type="text" name="servings" placeholder="Servings" maxLength="2" value={servings} autoFocus onChange={e => {setServings(e.target.value)}} />
+                                            {errors.servings && <p className="displayError text5">{errors.servings}</p> }
+                                            <button className="recipeCancel text4" type="button" onClick={() => {cancelEdit("servings")}}>Cancel</button>
+                                        </div>
+                                    :
+                                        <div className="recipeEditPairRow">
+                                            <p className="textDisplayRecipe text5">{servings}</p>
+                                            <button className="recipeEdit text4" type="button" onClick={() => {setEditServings(true)}}>Edit</button>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <p className="text3">Cooking time</p>
+                            <p className="text5">(Hours, Minutes)</p>
                             {editTime ?
-                                <>
-                                    <input type="text" name="timeHr" placeholder={"hr"} value={timeHr} onChange={e => {setTimeHr(e.target.value)}} />
-                                    <input type="text" name="timeMin" placeholder={"min"} value={timeMin} onChange={e => {setTimeMin(e.target.value)}} />
-                                    <button type="button" onClick={() => {cancelEdit("time")}}>Cancel</button>
-                                </>
+                                <div className="recipeEditPairRow">
+                                    <input className="textInputRecipe text5" type="text" name="timeHr" placeholder={"Hours"} value={timeHr} autoFocus onChange={e => {setTimeHr(e.target.value)}} />
+                                    <input className="textInputRecipe text5" type="text" name="timeMin" placeholder={"Minutes"} value={timeMin} onChange={e => {setTimeMin(e.target.value)}} />
+                                    <button className="recipeCancel text4" type="button" onClick={() => {cancelEdit("time")}}>Cancel</button>
+                                </div>
                             :
-                                <>
-                                    <p>{displayTime()}</p>
-                                    <button type="button" onClick={() => {setEditTime(true)}}>Edit</button>
-                                </>
+                                <div className="recipeEditPairRow">
+                                    <p className="textDisplayRecipe text5">{displayTime()}</p>
+                                    <button className="recipeEdit text4" type="button" onClick={() => {setEditTime(true)}}>Edit</button>
+                                </div>
                             }
-                            {editServings ?
-                                <>
-                                    <input type="text" name="servings" placeholder="servings" value={servings} onChange={e => {setServings(e.target.value)}} />
-                                    <button type="button" onClick={() => {cancelEdit("servings")}}>Cancel</button>
-                                </>
-                            :
-                                <>
-                                    <p>{servings}</p>
-                                    <button type="button" onClick={() => {setEditServings(true)}}>Edit</button>
-                                </>
-                            }
-                            {editMeal ?
-                                <>
-                                    <select name="meal" onChange={e => {setMeal(e.target.value)}}>
-                                        <option value="Dinner">Dinner</option>
-                                        <option value="Dessert">Dessert</option>
-                                    </select>
-                                    <button type="button" onClick={() => {cancelEdit("meal")}}>Cancel</button>
-                                </>
-                            :
-                                <>
-                                    <p>{meal}</p>
-                                    <button type="button" onClick={() => {setEditMeal(true)}}>Edit</button>
-                                </>
-                            }
+                            <p className="text3">Ingredients</p>
+                            <p className="text5">(Ingredient, Measurement, Unit)</p>
                             {editIngredients ?
-                                <>
-                                    {ingredients.map((ingredient, i) => {
-                                        return (
-                                            <div key={i}>
-                                                <input type="text" name="ingredient" placeholder="ingredient" value={ingredient.ingredient} onChange={e => handleInputIngredients(e.target, i)} />
-                                                <input type="text" name="measurement" placeholder="measurement" value={ingredient.measurement} onChange={e => handleInputIngredients(e.target, i)} />
-                                                <select name="unit" onChange={e => handleInputIngredients(e.target, i)}>
-                                                    <option value="">none</option>
-                                                    <option value="ml">ml</option>
-                                                    <option value="l">l</option>
-                                                    <option value="g">g</option>
-                                                    <option value="kg">kg</option>
-                                                    <option value="tbsp">tbsp</option>
-                                                    <option value="tsp">tsp</option>
-                                                </select>
-                                                {ingredients.length !== 1 && <button type="button" onClick={() => handleRemoveIngredients(i)}>Remove</button>}
-                                                {ingredients.length - 1 === i && <button type="button" onClick={handleAddIngredients}>Add</button>}
-                                            </div>
-                                        )
-                                    })}
-                                    <button type="button" onClick={() => {cancelEdit("ingredients")}}>Cancel</button>
-                                </>
+                                <div className="recipeEditPairRow">
+                                    <div style={{width: "100%"}}>
+                                        {ingredients.map((ingredient, i) => {
+                                            return (
+                                                <div key={i}>
+                                                    <div className="recipeEditRowIngredients">
+                                                        <input className="recipeEditRowIngredient textInputRecipe text5" type="text" name="ingredient" placeholder="Ingredient" maxLength="125" value={ingredient.ingredient} onChange={e => handleInputIngredients(e.target, i)} />
+                                                        <input className="recipeEditRowMeasurement textInputRecipe text5" type="text" name="measurement" placeholder="Measurement" maxLength="5" value={ingredient.measurement} onChange={e => handleInputIngredients(e.target, i)} />
+                                                        <select className="recipeEditRowUnit textInputRecipe text5" name="unit" onChange={e => handleInputIngredients(e.target, i)}>
+                                                            <option value="">none</option>
+                                                            <option value="ml">ml</option>
+                                                            <option value="l">l</option>
+                                                            <option value="g">g</option>
+                                                            <option value="kg">kg</option>
+                                                            <option value="tbsp">tbsp</option>
+                                                            <option value="tsp">tsp</option>
+                                                        </select>
+                                                        {ingredients.length !== 1 && <button className="recipeRemoveIngredient text4" type="button" onClick={() => handleRemoveIngredients(i)}>Remove</button>}
+                                                    </div>
+                                                    {ingredients.length - 1 === i && <button className="recipeAddIngredient text4" type="button" onClick={handleAddIngredients}>Add ingredient</button>}
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                    <button className="recipeCancel text4" type="button" onClick={() => {cancelEdit("ingredients")}}>Cancel</button>
+                                </div>
                             :
-                                <>
-                                    {ingredients.map((ingredient, i) => {
-                                        return (
-                                            <p key={i}>{ingredient.measurement + ingredient.unit + " " + ingredient.ingredient}</p>
-                                        )
-                                    })}
-                                    <button type="button" onClick={() => {setEditIngredients(true)}}>Edit</button>
-                                </>
+                                <div className="recipeEditPairRow">
+                                    <div className="recipeEditPairColumn">
+                                        {ingredients.map((ingredient, i) => {
+                                            return (
+                                                <p className="textDisplayRecipe text5" key={i}>{ingredient.measurement + ingredient.unit + " " + ingredient.ingredient}</p>
+                                            )
+                                        })}
+                                    </div>
+                                    <button className="recipeEdit text4" type="button" onClick={() => {setEditIngredients(true)}}>Edit</button>
+                                </div>
                             }
+                            <p className="text3">Steps</p>
                             {editSteps ?
-                                <>
-                                    {steps.map((x, i) => {
-                                        return (
-                                            <div key={i}>
-                                                <input type="text" name="steps" placeholder="step" value={steps} onChange={e => handleInputSteps(e.target.value, i)} />
-                                                {steps.length !== 1 && <button type="button" onClick={() => handleRemoveSteps(i)}>Remove</button>}
-                                                {steps.length - 1 === i && <button type="button" onClick={handleAddSteps}>Add</button>}
-                                            </div>
-                                        )
-                                    })}
-                                    <button type="button" onClick={() => {cancelEdit("steps")}}>Cancel</button>
-                                </>
+                                <div className="recipeEditPairRow">
+                                    <div style={{width: "100%"}}>   
+                                        {steps.map((step, i) => {
+                                            return (
+                                                <div key={i}>
+                                                    <div className="recipeEditRowSteps">
+                                                        <textarea className="textareaInput recipeEditRowStep textInputRecipe text5" type="text" name="steps" placeholder="Instruction" maxLength="500" rows="5" value={step} onChange={e => handleInputSteps(e.target.value, i)} />
+                                                        {steps.length !== 1 && <button className="recipeRemoveStep text4" type="button" onClick={() => handleRemoveSteps(i)}>Remove</button>}
+                                                    </div>
+                                                    {steps.length - 1 === i && <button className="recipeAddStep text4" type="button" onClick={handleAddSteps}>Add instruction</button>}
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                    <button className="recipeCancel text4" type="button" onClick={() => {cancelEdit("steps")}}>Cancel</button>
+                                </div>
                             :
-                                <>
-                                    {steps.map((step, i) => {
-                                        return (
-                                            <p key={i}>{step}</p>
-                                        )
-                                    })}
-                                    <button type="button" onClick={() => {setEditSteps(true)}}>Edit</button>
-                                </>
+                                <div className="recipeEditPairRow">
+                                    <div className="recipeEditPairColumn">
+                                        {steps.map((step, i) => {
+                                            return (
+                                                <p className="textDisplayRecipe text5" key={i}>{step}</p>
+                                            )
+                                        })}
+                                    </div>
+                                    <button className="recipeEdit text4" type="button" onClick={() => {setEditSteps(true)}}>Edit</button>
+                                </div>
                             }
                         </div>
                         <div>
-                            <input type="submit" value="Update Recipe" />
+                            <input className="recipeUpdate text4" type="submit" value="Update recipe" />
+                            <Link type="button" className="recipeReturn text4" to={`/recipes/${recipeID}`}>Cancel</Link>
                         </div>
                     </form>
-                </>
+                </div>
                 :
                 null
             }

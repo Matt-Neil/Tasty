@@ -28,11 +28,27 @@ exports.getUser = async (req, res, next) => {
                 error: 'No User Found.'
             })
         } else {
-            res.status(201).json({
-                success: true,
-                count: user.length,
-                data: user
-            })
+            if (Object.entries(res.locals.currentUser._id).toString() === Object.entries(mongoose.Types.ObjectId(req.params.id)).toString()) {
+                res.status(201).json({
+                    success: true,
+                    user: true,
+                    data: user
+                })
+            } else if (res.locals.currentUser.following.some(i => Object.entries(i._id).toString() === Object.entries(user._id).toString())) {
+                res.status(201).json({
+                    success: true,
+                    user: false,
+                    followed: true,
+                    data: user
+                })
+            } else {
+                res.status(201).json({
+                    success: true,
+                    user: false,
+                    followed: false,
+                    data: user
+                })
+            }
         }
     } catch (err) {
         res.status(500).json({
@@ -76,7 +92,7 @@ exports.getUserFollowers = async (req, res, next) => {
                     'followerUsers._id': -1
                 } 
             }
-        ]).limit(20);
+        ]).limit(30);
 
         if (!followers) {
             res.status(404).json({
@@ -90,6 +106,42 @@ exports.getUserFollowers = async (req, res, next) => {
                 data: followers
             })
         }
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            error: 'Server Error'
+        })
+    }
+}
+
+exports.updateUserFollowers = async (req, res, next) => {
+    try {
+        const user = await Users.findById(req.params.id);
+
+        let updatedFollowers = user.followers;
+
+        if (req.body.remove) {
+            updatedFollowers.splice(user.followers.indexOf(res.locals.currentUser._id), 1);
+        } else {
+            updatedFollowers = updatedFollowers.concat(res.locals.currentUser._id);
+        }
+
+        user.picture = user.picture;
+        user.followers = updatedFollowers;
+        user.following = user.following;
+        user.created_recipes = user.created_recipes;
+        user.saved_recipes = user.saved_recipes;
+        user.name = user.name;
+        user.email = user.email;
+        user.password = user.password;
+        user.date = user.date;
+
+        await user.save();
+
+        res.status(201).json({
+            success: true,
+            data: user
+        })
     } catch (err) {
         res.status(500).json({
             success: false,
@@ -132,7 +184,7 @@ exports.getUserFollowing = async (req, res, next) => {
                     'followingUsers._id': -1
                 } 
             }
-        ]).limit(20);
+        ]).limit(30);
 
         if (!following) {
             res.status(404).json({
@@ -278,7 +330,7 @@ exports.getProfileFollowers = async (req, res, next) => {
                         'followerUsers._id': -1
                     } 
                 }
-            ]).limit(20);
+            ]).limit(30);
 
             if (!followers) {
                 res.status(404).json({
@@ -339,7 +391,7 @@ exports.getProfileFollowing = async (req, res, next) => {
                         'followingUsers._id': -1
                     } 
                 }
-            ]).limit(20);
+            ]).limit(30);
 
             if (!following) {
                 res.status(404).json({
@@ -528,33 +580,6 @@ exports.updateProfile = async (req, res, next) => {
                         })
                     }
                     break;
-                case "follower":
-                    if (!user) {
-                        res.status(404).json({
-                            success: false,
-                            error: 'No User Found.'
-                        })
-                    } else {
-                        const updatedFollowers = user.followers.concat(req.body.id);
-        
-                        user.picture = user.picture;
-                        user.followers = updatedFollowers;
-                        user.following = user.following;
-                        user.created_recipes = user.created_recipes;
-                        user.saved_recipes = user.saved_recipes;
-                        user.name = user.name;
-                        user.email = user.email;
-                        user.password = user.password;
-                        user.date = user.date;
-        
-                        await user.save();
-        
-                        res.status(201).json({
-                            success: true,
-                            data: user
-                        })
-                    }
-                    break;
                 case "following":
                     if (!user) {
                         res.status(404).json({
@@ -562,7 +587,13 @@ exports.updateProfile = async (req, res, next) => {
                             error: 'No User Found.'
                         })
                     } else {
-                        const updatedFollowing = user.following.concat(req.body.id);
+                        let updatedFollowing = user.following;
+
+                        if (req.body.remove) {
+                            updatedFollowing.splice(user.following.indexOf(req.body.id), 1);
+                        } else {
+                            updatedFollowing = updatedFollowing.concat(req.body.id);
+                        }
         
                         user.picture = user.picture;
                         user.followers = user.followers;
@@ -589,8 +620,14 @@ exports.updateProfile = async (req, res, next) => {
                             error: 'No User Found.'
                         })
                     } else {
-                        const updatedSaved = user.saved_recipes.concat(req.body.id);
-        
+                        let updatedSaved = user.saved_recipes;
+
+                        if (req.body.remove) {
+                            updatedSaved.splice(user.saved_recipes.indexOf(req.body.id), 1);
+                        } else {
+                            updatedSaved = updatedSaved.concat(req.body.id);
+                        }
+
                         user.picture = user.picture;
                         user.followers = user.followers;
                         user.following = user.following;
@@ -610,23 +647,21 @@ exports.updateProfile = async (req, res, next) => {
                     }
                     break;
                 case "all":
-                    const { name, email, password, date, picture, followers, following, created_recipes, saved_recipes } = req.body;
-
                     if (!user) {
                         res.status(404).json({
                             success: false,
                             error: 'No User Found.'
                         })
                     } else {
-                        user.picture = picture;
-                        user.followers = followers;
-                        user.following = following;
-                        user.created_recipes = created_recipes;
-                        user.saved_recipes = saved_recipes;
-                        user.name = name;
-                        user.email = email;
-                        user.password = password;
-                        user.date = date;
+                        user.picture = req.body.picture;
+                        user.followers = user.followers;
+                        user.following = user.following;
+                        user.created_recipes = user.created_recipes;
+                        user.saved_recipes = user.saved_recipes;
+                        user.name = user.name;
+                        user.email = user.email;
+                        user.password = req.body.password;
+                        user.date = user.date;
 
                         await user.save();
 
@@ -709,7 +744,8 @@ exports.getFeedShort = async (req, res, next) => {
                         'recipe.time': 1,
                         'recipe.rating': 1,
                         'recipe.difficulty': 1,
-                        'recipe.createdAt': 1
+                        'recipe.createdAt': 1,
+                        'recipe._id': 1
                     }
                 }, { 
                     $sort: { 
@@ -774,6 +810,7 @@ exports.getFeed = async (req, res, next) => {
                         'recipe.rating': 1,
                         'recipe.difficulty': 1,
                         'recipe.createdAt': 1,
+                        'recipe._id': 1,
                         'recipe.page': { $lt: ['$recipe.createdAt', new Date(req.query.createdAt)] }
                     }
                 }, {

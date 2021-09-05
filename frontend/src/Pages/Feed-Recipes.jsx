@@ -32,7 +32,7 @@ const FeedRecipes = () => {
         }
     }
 
-    window.onscroll = function() {
+    const loadMore = () => {
         if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight && feedRecipes.length !== 0) {
             {fetchData(feedRecipes[feedRecipes.length-1].recipe.createdAt)}
         }
@@ -42,7 +42,7 @@ const FeedRecipes = () => {
         <div className="mainBody">
             {loaded ?
                 <>
-                    <p className="text2" style={{marginLeft: 15}}>My Feed</p>
+                    <p className="marginText text2">Your feed</p>
                     <div className="recipesRow">
                         { feedRecipes && feedRecipes.map((recipeReducer, i) => {
                             return (
@@ -54,9 +54,9 @@ const FeedRecipes = () => {
                     </div>
                     <div className="finished">
                         {finished ?
-                            <p className="text4">You Have Reached the End!</p>
+                            <p className="text4">You have reached the end!</p>
                             :
-                            <p className="text4">Load More!</p>
+                            <p className="loadMore text4" onClick={() => {loadMore()}}>Load more</p>
                         }
                     </div>
                 </>

@@ -4,27 +4,8 @@ body {
     margin: 0;
     background-color: #F2F2F2;
 }
-.mainBody {
-    margin: 100px auto 150px;
-    max-width: 1325px;
-    width: 94%;
-    min-height: 100vh;
-}
-.footer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: white;
-    height: 175px;
-    width: 100%;
-    position: relative;
-    bottom: 0;
-}
-.footerTop {
-    display: flex;
-    width: 100%;
-    height: 100%;
-    align-items: center;
+.innerBody {
+    margin: 0 15px;
 }
 .footerBottom {
     color: #6D6D6D;
@@ -41,15 +22,6 @@ body {
     height: 40px;
     border-radius: 20px;
 }
-.footerLeft {
-    display: flex;
-    margin: 0 0 0 50px;
-}
-.footerRight {
-    color: #363636;
-    cursor: pointer;
-    margin: 0 50px 0 auto;
-}
 .footerRight:hover {
     text-underline-offset: 5px;
     text-decoration: underline;
@@ -61,35 +33,15 @@ body {
     height: 90px;
     width: 100%;
 }
-.leftHeader {
-    flex: 1;
-    margin: 0 0 0 50px;
-}
 .middleHeader {
     flex: 1;
-    margin: -10px 0 0 0;
+    margin: -10px 0 0 -30px;
 }
 .accountButton {
-    color: #6D6D6D;
-    text-decoration: none;
-}
-.title {
-    font-family: 'Crimson Text', serif;
-    font-size: 48px;
-    font-weight: bold;
-    color: #363636;
-    text-decoration: none;
-}
-.openSearchButton {
-    margin: 0 50px 0 0;
     display: flex;
     align-items: center;
-    border: none;
-    background: none;
-    font-family: 'Mulish', sans-serif;
-    font-size: 18px;
-    color: #363636;
-    cursor: pointer;
+    color: #6D6D6D;
+    text-decoration: none;
 }
 .search {
     display: flex;
@@ -106,17 +58,6 @@ body {
     color: #3CC5A4;
     font-size: 30px;
 }
-.searchBox {
-    padding: 0 15px;
-    margin: 0 5px;
-    max-width: 720px;
-    width: 100%;
-    height: 40px;
-    border-radius: 15px;
-    border: none;
-    background-color: #F2F2F2;
-    outline-style: none;
-}
 .closeSearchButton {
     border: none;
     background: none;
@@ -124,6 +65,916 @@ body {
     color: #363636;
     font-size: 30px;
 }
+
+@media screen and (min-width: 1501px) {
+    .mainBody {
+        margin: 125px auto 150px;
+        max-width: 1325px;
+        width: 94%;
+        min-height: 100vh;
+    }
+    .recipesGrid {
+        max-width: 1325px;
+        min-height: 700px;
+        max-height: 1400px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        margin: 0 0 20px 0;
+    }
+    .img2 {
+        width: 525px;
+        height: 525px;
+    }
+    .img3 {
+        width: 320px;
+        height: 320px;
+    }
+    .recipeLinkMediumTop {
+        grid-column-start: 2;
+        grid-column-end: 3;
+        grid-row-start: 1;
+        grid-row-end: 2;
+        margin: 0 15px 30px 0;
+        text-decoration: none;
+    }
+    .recipeLinkMediumBottom {
+        grid-column-start: 2;
+        grid-column-end: 3;
+        grid-row-start: 2;
+        grid-row-end: 3;
+        margin: 0 15px 30px 0;
+        text-decoration: none;
+    }
+    .recipeLinkLarge {
+        grid-column-start: 1;
+        grid-column-end: 2;
+        grid-row-start: 1;
+        grid-row-end: 3;
+        margin: 0 15px 30px 15px;
+        text-decoration: none;
+    }
+    .largeCard {
+        width: 525px;
+        height: 670px;
+        background-color: white;
+        position: relative;
+    }
+    .largeCardTitle {
+        margin: 15px 15px;
+        word-wrap: normal;
+        color: #363636;
+        letter-spacing: 0.5px;
+    }
+    .largeCardInformation {
+        display: flex;
+        margin: 0 0 15px 15px;
+        flex-wrap: wrap;
+        color: #6D6D6D;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+    }
+    .largeCardRating {
+        margin: 5px 0;
+        padding: 0 8px 0 0;
+        border-right: 1px #6D6D6D solid;
+    }
+    .largeCardDifficulty {
+        margin: 5px 0;
+        padding: 0 8px;
+        border-right: 1px #6D6D6D solid;
+    }
+    .largeCardTime {
+        margin: 5px 0;
+        padding: 0 8px;
+    }
+    .mediumCard {
+        display: flex;
+        width: 740px;
+        height: 320px;
+        background-color: white;
+        position: relative;
+    }
+    .mediumCardTitle {
+        margin: 15px 15px;
+        word-wrap: normal;
+        color: #363636;
+        letter-spacing: 0.5px;
+    }
+    .mediumCardInformation {
+        display: flex;
+        margin: 0 0 15px 335px;
+        flex-wrap: wrap;
+        color: #6D6D6D;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+    }
+    .mediumCardRating {
+        margin: 5px 0;
+        padding: 0 8px 0 0;
+        border-right: 1px #6D6D6D solid;
+    }
+    .mediumCardDifficulty {
+        margin: 5px 0;
+        padding: 0 8px;
+        border-right: 1px #6D6D6D solid;
+    }
+    .mediumCardTime {
+        margin: 5px 0;
+        padding: 0 8px;
+    }
+}
+
+@media screen and (max-width: 1500px) {
+
+}
+
+@media screen and (min-width: 1051px) and (max-width: 1500px) {
+    .mainBody {
+        margin: 75px auto 150px;
+        max-width: 1325px;
+        width: 94%;
+        min-height: 100vh;
+    }
+    .recipesGrid {
+        max-width: 1000px;
+        min-height: fit-content;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        margin: 0 0 20px 0;
+    }
+    .img2 {
+        width: 350px;
+        height: 350px;
+    }
+    .img3 {
+        width: 250px;
+        height: 235px;
+    }
+    .recipeLinkMediumTop {
+        grid-column-start: 2;
+        grid-column-end: 3;
+        grid-row-start: 1;
+        grid-row-end: 2;
+        margin: 0 15px 0 0;
+        text-decoration: none;
+    }
+    .recipeLinkMediumBottom {
+        grid-column-start: 2;
+        grid-column-end: 3;
+        grid-row-start: 2;
+        grid-row-end: 3;
+        margin: 0 0 30px 0;
+        text-decoration: none;
+    }
+    .recipeLinkLarge {
+        grid-column-start: 1;
+        grid-column-end: 2;
+        grid-row-start: 1;
+        grid-row-end: 3;
+        margin: 0 0 30px 15px;
+        text-decoration: none;
+    }
+    .largeCard {
+        width: 350px;
+        height: 500px;
+        background-color: white;
+        position: relative;
+    }
+    .largeCardTitle {
+        margin: 15px 15px;
+        word-wrap: normal;
+        color: #363636;
+        letter-spacing: 0.5px;
+    }
+    .largeCardInformation {
+        display: flex;
+        margin: 0 0 15px 15px;
+        flex-wrap: wrap;
+        color: #6D6D6D;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+    }
+    .largeCardRating {
+        margin: 5px 0;
+        padding: 0 8px 0 0;
+        border-right: 1px #6D6D6D solid;
+    }
+    .largeCardDifficulty {
+        margin: 5px 0;
+        padding: 0 8px;
+        border-right: 1px #6D6D6D solid;
+    }
+    .largeCardTime {
+        margin: 5px 0;
+        padding: 0 8px;
+    }
+    .mediumCard {
+        display: flex;
+        width: 575px;
+        height: 235px;
+        background-color: white;
+        position: relative;
+    }
+    .mediumCardTitle {
+        margin: 15px 15px;
+        word-wrap: normal;
+        color: #363636;
+        letter-spacing: 0.5px;
+    }
+    .mediumCardInformation {
+        display: flex;
+        margin: 0 0 15px 335px;
+        flex-wrap: wrap;
+        color: #6D6D6D;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+    }
+    .mediumCardRating {
+        margin: 5px 0;
+        padding: 0 8px 0 0;
+        border-right: 1px #6D6D6D solid;
+    }
+    .mediumCardDifficulty {
+        margin: 5px 0;
+        padding: 0 8px;
+        border-right: 1px #6D6D6D solid;
+    }
+    .mediumCardTime {
+        margin: 5px 0;
+        padding: 0 8px;
+    }
+}
+
+@media screen and (min-width: 801px) and (max-width: 1500px) {
+
+}
+
+@media screen and (min-width: 1051px) {
+    .accountUserName {
+        display: flex;
+        align-items: center;
+    }
+    .accountUserInformation {
+        display: flex;
+        align-items: flex-start;
+        margin: 0 0 25px 0;
+    }
+    .accountName {
+        margin: 0 0 0 30px;
+    }
+    .accountInformation {
+        display: flex;
+        margin: 0 0 0 auto;
+    }
+    .recipeRow {
+        display: flex;
+    }
+    .recipeInformation {
+        margin: 0 0 0 30px;
+    }
+}
+
+@media screen and (max-width: 1050px) {
+    .mainBody {
+        margin: 50px auto 150px;
+        max-width: 1325px;
+        width: 94%;
+        min-height: 100vh;
+    }
+    .recipesGrid {
+        max-width: 100%;
+        min-height: fit-content;
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0 0 20px 0;
+    }
+    .img2 {
+        max-width: 350px;
+        min-width: 275px;
+        width: 100%;
+        height: 350px;
+        object-fit: cover;
+    }
+    .img3 {
+        max-width: 350px;
+        min-width: 250px;
+        width: 100%;
+        max-height: 350px;
+        height: auto;
+        min-height: 250px;
+        object-fit: cover;
+    }
+    .recipeLinkMediumTop {
+        margin: 0 15px 30px 15px;
+        text-decoration: none;
+    }
+    .recipeLinkMediumBottom {
+        margin: 0 15px 30px 15px;
+        text-decoration: none;
+    }
+    .recipeLinkLarge {
+        margin: 0 15px 30px 15px;
+        text-decoration: none;
+    }
+    .largeCard {
+        max-width: 350px;
+        height: 500px;
+        background-color: white;
+        position: relative;
+    }
+    .largeCardTitle {
+        margin: 15px 15px;
+        word-wrap: normal;
+        color: #363636;
+        letter-spacing: 0.5px;
+    }
+    .largeCardInformation {
+        display: flex;
+        margin: 0 0 15px 15px;
+        flex-wrap: wrap;
+        color: #6D6D6D;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+    }
+    .largeCardRating {
+        margin: 5px 0;
+        padding: 0 8px 0 0;
+        border-right: 1px #6D6D6D solid;
+    }
+    .largeCardDifficulty {
+        margin: 5px 0;
+        padding: 0 8px;
+        border-right: 1px #6D6D6D solid;
+    }
+    .largeCardTime {
+        margin: 5px 0;
+        padding: 0 8px;
+    }
+    .mediumCard {
+        max-width: 350px;
+        height: 500px;
+        background-color: white;
+        position: relative;
+    }
+    .mediumCardTitle {
+        margin: 15px 15px;
+        word-wrap: normal;
+        color: #363636;
+        letter-spacing: 0.5px;
+    }
+    .mediumCardInformation {
+        display: flex;
+        margin: 0 0 15px 15px;
+        flex-wrap: wrap;
+        color: #6D6D6D;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+    }
+    .mediumCardRating {
+        margin: 5px 0;
+        padding: 0 8px 0 0;
+        border-right: 1px #6D6D6D solid;
+    }
+    .mediumCardDifficulty {
+        margin: 5px 0;
+        padding: 0 8px;
+        border-right: 1px #6D6D6D solid;
+    }
+    .mediumCardTime {
+        margin: 5px 0;
+        padding: 0 8px;
+    }
+    .recipeRow {
+        display: flex;
+        flex-direction: column;
+    }
+    .recipeInformation {
+        margin: 30px 0 0 0;
+    }
+}
+
+@media screen and (min-width: 801px) and (max-width: 1050px) {
+    .accountUserName {
+        display: flex;
+        flex-direction: column;
+    }
+    .accountUserInformation {
+        display: flex;
+        align-items: flex-start;
+        margin: 0 0 25px 0;
+    }
+    .accountName {
+        margin: 0 0 15px 30px;
+    }
+    .accountInformation {
+        display: flex;
+        margin: 0 0 15px 0;
+    }
+}
+
+@media screen and (min-width: 801px) {
+    .title {
+        font-family: 'Crimson Text', serif;
+        font-size: 48px;
+        font-weight: bold;
+        color: #363636;
+        text-decoration: none;
+    }
+    .leftHeader {
+        flex: 1;
+        margin: 0 0 0 50px;
+    }
+    .searchBox {
+        padding: 0 15px;
+        margin: 0 5px;
+        max-width: 720px;
+        width: 100%;
+        height: 40px;
+        border-radius: 15px;
+        border: none;
+        background-color: #F2F2F2;
+        outline-style: none;
+    }
+    .openSearchButton {
+        margin: 0 50px 0 0;
+        display: flex;
+        align-items: center;
+        border: none;
+        background: none;
+        font-family: 'Mulish', sans-serif;
+        font-size: 18px;
+        color: #363636;
+        cursor: pointer;
+    }
+    .footerTop {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        align-items: center;
+    }
+    .footerLeft {
+        display: flex;
+        margin: 0 0 0 50px;
+    }
+    .footerRight {
+        color: #363636;
+        cursor: pointer;
+        margin: 0 50px 0 auto;
+    }
+    .footer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: white;
+        height: 175px;
+        width: 100%;
+        position: relative;
+        bottom: 0;
+    }
+    .newRecipeButton {
+        display: flex;
+        position: sticky;
+        right: 0;
+        bottom: 15px;
+        align-items: center;
+        justify-content: center;
+        margin: 15px 15px 15px auto;
+        width: 140px;
+        padding: 0 5px 0 0;
+        height: 60px;
+        border-radius: 20px;
+        background-color: #3CC5A4;
+        color: white;
+        text-decoration: none;
+    }
+    .accountJoined {
+        margin: 15px 0 0 30px;
+    }
+    .accountNavigation {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        margin: 0 0 75px 0;
+    }
+    .signinBody {
+        padding: 40px 25px;
+        width: 450px;
+        height: fit-content;
+        border-radius: 20px;
+        background-color: white;
+    }
+    .recipeColumns {
+        display: flex;
+    }
+    .recipeRightColumn {
+        margin: 0 0 0 auto;
+    }
+    .recipeLeftColumn {
+        width: 80%;
+    }
+    .relatedRecipesRow {
+        display: flex; 
+        flex-direction: column;
+        margin: 0 0 0 -15px;
+    }
+    .img1 {
+        width: 575px;
+        height: 575px;
+    }
+    .textInputReview {
+        padding: 0 15px;
+        margin: 0 0 15px 0;
+        width: 50%;
+        height: 40px;
+        border-radius: 15px;
+        border: none;
+        background-color: white;
+        outline-style: none;
+    }
+    .reviewCardName {
+        margin: 20px 20px 0 20px;
+        color: #363636;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+    .reviewCardDate {
+        margin: 20px 20px 0 0;
+        color: #363636;
+    }
+    .recipeInformationSmall {
+        display: flex;
+        flex-wrap: wrap;
+        color: #6D6D6D;
+        margin: 0 0 40px 0;
+        font-size: 16px;
+    }
+    .recipeTitle {
+        margin: 0 0 50px 0 ;
+        color: #363636;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+        font-size: 32px;
+        font-family: 'Mulish', sans-serif;
+    }
+    .recipeDescription {
+        margin: 0 0 25px 0;
+        color: #363636;
+        letter-spacing: 0.5px;
+        font-size: 18px;
+        font-family: 'Mulish', sans-serif;
+    }
+    .recipeEditPicture {
+        width: 100%;
+        display: flex;
+    }
+    .pictureInput {
+        margin: 0 0 25px 15px;
+    }
+    .pictureUpload {
+        margin: 0 0 50px 15px;
+        background: none;
+        width: 130px;
+        height: 38px;
+        border: none;
+        border-radius: 14px;
+        cursor: pointer;
+        color: white;
+        background-color: #3CC5A4;
+    }
+    .recipeEditRowMeal {
+        flex: 1;
+        min-width: 350px;
+        margin: 0 auto;
+        padding: 0 15px 0 15px;
+    }
+    .recipeEditRowDifficulty {
+        flex: 1;
+        min-width: 200px;
+        margin: 0 auto 0 0;
+    }
+    .recipePictureCancel {
+        background: none;
+        margin: 0 0 0 auto;
+        width: 70px;
+        height: 38px;
+        border: none;
+        cursor: pointer;
+        color: #363636;
+    }
+}
+
+@media screen and (max-width: 800px) {
+    .title {
+        font-family: 'Crimson Text', serif;
+        font-size: 32px;
+        font-weight: bold;
+        color: #363636;
+        text-decoration: none;
+    }
+    .leftHeader {
+        flex: 1;
+        margin: 0 0 0 15px;
+    }
+    .searchBox {
+        padding: 0 15px;
+        margin: 0 5px;
+        max-width: 370px;
+        width: 100%;
+        height: 40px;
+        border-radius: 15px;
+        border: none;
+        background-color: #F2F2F2;
+        outline-style: none;
+    }
+    .openSearchButton {
+        margin: 0 15px 0 0;
+        display: flex;
+        align-items: center;
+        border: none;
+        background: none;
+        font-family: 'Mulish', sans-serif;
+        font-size: 18px;
+        color: #363636;
+        cursor: pointer;
+    }
+    .footerTop {
+        margin: 30px 0 50px 0;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+        align-items: center;
+    }
+    .footerLeft {
+        display: flex;
+        margin: 0 0 0 15px;
+    }
+    .footerRight {
+        color: #363636;
+        cursor: pointer;
+        margin: 25px 15px 0 15px;
+    }
+    .footer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: white;
+        height: 200px;
+        width: 100%;
+        position: relative;
+        bottom: 0;
+    }
+    .newRecipeButton {
+        display: flex;
+        position: sticky;
+        right: 0;
+        bottom: 15px;
+        align-items: center;
+        justify-content: center;
+        margin: 15px 15px 15px auto;
+        width: 50px;
+        height: 50px;
+        border-radius: 25px;
+        background-color: #3CC5A4;
+        color: white;
+        text-decoration: none;
+    }
+    .accountUserName {
+        display: flex;
+        flex-direction: column;
+        margin: 0 0 15px -15px;
+    }
+    .accountUserInformation {
+        display: flex;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        margin: 0 0 25px 0;
+    }
+    .accountName {
+        margin: 0 0 15px 30px;
+    }
+    .accountInformation {
+        display: flex;
+        margin: 15px 0 15px -15px;
+    }
+    .accountJoined {
+        margin: 15px 0 0 15px;
+    }
+    .accountNavigation {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        margin: 0 0 40px 0;
+    }
+    .signinBody {
+        padding: 40px 25px;
+        margin: 0 15px;
+        max-width: 450px;
+        width: 80%;
+        height: fit-content;
+        border-radius: 20px;
+        background-color: white;
+    }
+    .recipeColumns {
+        display: flex;
+        flex-direction: column;
+    }
+    .recipeRightColumn {
+        margin: 0 auto 0 0;
+    }
+    .recipeLeftColumn {
+        width: 100%;
+    }
+    .relatedRecipesRow {
+        display: flex; 
+        flex-wrap: wrap;
+        margin: 0 0 0 -15px;
+    }
+    .img1 {
+        max-width: 400px;
+        width: 100%;
+        max-height: 400px;
+        height: auto;
+        object-fit: cover;
+    }
+    .textInputReview {
+        padding: 0 15px;
+        margin: 0 0 15px 0;
+        width: 90%;
+        height: 40px;
+        border-radius: 15px;
+        border: none;
+        background-color: white;
+        outline-style: none;
+    }
+    .reviewCardName {
+        margin: 20px 20px 0 20px;
+        width: 100%;
+        color: #363636;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+    .reviewCardDate {
+        margin: 20px 20px 0 20px;
+        color: #363636;
+    }
+    .recipeInformationSmall {
+        display: flex;
+        flex-wrap: wrap;
+        color: #6D6D6D;
+        margin: 0 0 40px 0;
+        font-size: 12px;
+    }
+    .recipeTitle {
+        margin: 0 0 25px 0 ;
+        color: #363636;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+        font-size: 24px;
+        font-family: 'Mulish', sans-serif;
+    }
+    .recipeDescription {
+        margin: 0 0 25px 0;
+        color: #363636;
+        letter-spacing: 0.5px;
+        font-size: 16px;
+        font-family: 'Mulish', sans-serif;
+    }
+    .recipeEditPicture {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .pictureInput {
+        margin: 15px 0 25px 0;
+    }
+    .pictureUpload {
+        margin: 0 0 50px 0;
+        background: none;
+        width: 130px;
+        height: 38px;
+        border: none;
+        border-radius: 14px;
+        cursor: pointer;
+        color: white;
+        background-color: #3CC5A4;
+    }
+    .recipePictureCancel {
+        background: none;
+        margin: -40px auto 0 -10px;
+        width: 70px;
+        height: 38px;
+        border: none;
+        cursor: pointer;
+        color: #363636;
+    }
+}
+
+@media screen and (min-width: 471px) and (max-width: 800px) {
+    .recipeEditRowMeal {
+        flex: 1;
+        min-width: 200px;
+        padding: 0 15px 0 0;
+    }
+    .recipeEditRowDifficulty {
+        flex: 1;
+        min-width: 200px;
+        margin: 0 auto 0 0;
+        padding: 0 15px 0 0;
+    }
+}
+
+@media screen and (min-width: 455px) {
+    .recipeRemoveStep {
+        background: none;
+        margin: 0 40px 0 auto;
+        width: 50px;
+        height: 38px;
+        border: none;
+        cursor: pointer;
+        color: #363636;
+    }
+}
+
+@media screen and (max-width: 454px) {
+    .recipeRemoveStep {
+        background: none;
+        margin: -25px 40px 15px auto;
+        width: 50px;
+        height: 38px;
+        border: none;
+        cursor: pointer;
+        color: #363636;
+    }
+}
+
+@media screen and (min-width: 734px) {
+    .recipeRemoveIngredient {
+        background: none;
+        margin: 0 40px 0 auto;
+        width: 50px;
+        height: 38px;
+        border: none;
+        cursor: pointer;
+        color: #363636;
+    }
+}
+
+@media screen and (min-width: 636px) and (max-width: 733px) {
+    .recipeRemoveIngredient {
+        background: none;
+        margin: -25px 40px 15px auto;
+        width: 50px;
+        height: 38px;
+        border: none;
+        cursor: pointer;
+        color: #363636;
+    }
+}
+
+@media screen and (min-width: 471px) and (max-width: 636px) {
+    .recipeRemoveIngredient {
+        background: none;
+        margin: 0 40px 0 auto;
+        width: 50px;
+        height: 38px;
+        border: none;
+        cursor: pointer;
+        color: #363636;
+    }
+}
+
+@media screen and (max-width: 470px) {
+    .recipeRemoveIngredient {
+        background: none;
+        margin: -25px 40px 15px auto;
+        width: 50px;
+        height: 38px;
+        border: none;
+        cursor: pointer;
+        color: #363636;
+    }
+    .recipeEditRowMeal {
+        flex: 1;
+        min-width: 200px;
+    }
+    .recipeEditRowDifficulty {
+        flex: 1;
+        min-width: 200px;
+        margin: 0 auto 0 0;
+    }
+}
+
 .homeHeader {
     display: flex;
     align-items: center;
@@ -132,7 +983,7 @@ body {
 .homeNavigation {
     display: flex;
     align-items: center;
-    margin: 0 15px 0 auto;
+    margin: 0 15px 25px auto;
 }
 .homeLeftButton {
     width: 34px;
@@ -142,6 +993,7 @@ body {
     border-radius: 17px;
     cursor: pointer;
     background: none;
+    background-color: white;
 }
 .homeRightButton {
     width: 34px;
@@ -150,18 +1002,21 @@ body {
     border-radius: 17px;
     cursor: pointer;
     background: none;
+    background-color: white;
 }
-.recipesGrid {
-    max-width: 1325px;
-    min-height: 700px;
-    max-height: 1400px;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(2, 1fr);
+.pictureRemove {
+    margin: 0 0 50px 15px;
+    background: none;
+    width: 140px;
+    height: 38px;
+    border: none;
+    cursor: pointer;
+    color: #363636;
 }
 .recipesRow {
     display: flex;
     flex-wrap: wrap;
+    margin: 0 0 20px 0;
 }
 .homeIngredientsRow {
     display: flex;
@@ -178,35 +1033,27 @@ body {
     text-align: center;
     line-height: 40px;
     text-decoration: none;
+    border: 1px #3CC5A4 solid;
     color: #363636;
 }
 .recipeLinkSmall {
     margin: 0 15px 30px 15px;
     text-decoration: none;
 }
-.recipeLinkMediumTop {
-    grid-column-start: 2;
-    grid-column-end: 3;
-    grid-row-start: 1;
-    grid-row-end: 2;
-    margin: 0 15px 30px 0;
-    text-decoration: none;
+.userCard {
+    display: flex;
+    align-items: center;
+    width: 300px;
+    height: 100px;
+    background-color: white;
+    position: relative;
 }
-.recipeLinkMediumBottom {
-    grid-column-start: 2;
-    grid-column-end: 3;
-    grid-row-start: 2;
-    grid-row-end: 3;
-    margin: 0 15px 30px 0;
-    text-decoration: none;
-}
-.recipeLinkLarge {
-    grid-column-start: 1;
-    grid-column-end: 2;
-    grid-row-start: 1;
-    grid-row-end: 3;
-    margin: 0 15px 30px 15px;
-    text-decoration: none;
+.userCardName {
+    margin: 0 0 0 15px;
+    word-wrap: normal;
+    font-family: 'Mulish', sans-serif;
+    font-size: 16px;
+    color: #363636;
 }
 .smallCard {
     width: 235px;
@@ -220,6 +1067,7 @@ body {
     font-family: 'Mulish', sans-serif;
     font-size: 16px;
     color: #363636;
+    letter-spacing: 0.5px;
 }
 .smallCardInformation {
     display: flex;
@@ -247,21 +1095,41 @@ body {
     padding: 0 8px;
 }
 .saveRecipeButton {
-    width: 34px;
-    height: 34px;
-    margin: 8px;
-    z-index: 1000px;
-    position: absolute;
-    left: 0;
-    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 2px 0 0;
+    width: fit-content;
+    height: 38px;
     border: none;
-    border-radius: 17px;
+    border-radius: 14px;
     cursor: pointer;
+    color: white;
     background-color: #3CC5A4;
 }
+.saveRecipeText {
+    margin: 0 10px 0 0;
+}
+.followUserButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 0 0 25px;
+    width: fit-content;
+    height: 38px;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    color: white;
+    background-color: #3CC5A4;
+}
+.followUserText {
+    margin: 0 10px 0 0;
+}
 .homeLink {
-    color: #363636;
+    color: #3CC5A4;
     text-decoration: none;
+    letter-spacing: 0.5px;
 }
 .text1 {
     font-family: 'Mulish', sans-serif;
@@ -287,82 +1155,423 @@ body {
     font-family: 'Mulish', sans-serif;
     font-size: 12px;
 }
-.largeCard {
-    width: 525px;
-    height: 670px;
-    background-color: white;
-    position: relative;
-}
-.largeCardTitle {
-    margin: 15px 15px;
-    word-wrap: normal;
-    color: #363636;
-}
-.largeCardInformation {
-    display: flex;
-    margin: 0 0 15px 15px;
-    flex-wrap: wrap;
-    color: #6D6D6D;
-    position: absolute;
-    left: 0;
-    bottom: 0;
-}
-.largeCardRating {
-    margin: 5px 0;
-    padding: 0 8px 0 0;
-    border-right: 1px #6D6D6D solid;
-}
-.largeCardDifficulty {
-    margin: 5px 0;
-    padding: 0 8px;
-    border-right: 1px #6D6D6D solid;
-}
-.largeCardTime {
-    margin: 5px 0;
-    padding: 0 8px;
-}
-.mediumCard {
-    display: flex;
-    width: 740px;
-    height: 320px;
-    background-color: white;
-    position: relative;
-}
-.mediumCardTitle {
-    margin: 15px 15px;
-    word-wrap: normal;
-    color: #363636;
-}
-.mediumCardInformation {
-    display: flex;
-    margin: 0 0 15px 335px;
-    flex-wrap: wrap;
-    color: #6D6D6D;
-    position: absolute;
-    left: 0;
-    bottom: 0;
-}
-.mediumCardRating {
-    margin: 5px 0;
-    padding: 0 8px 0 0;
-    border-right: 1px #6D6D6D solid;
-}
-.mediumCardDifficulty {
-    margin: 5px 0;
-    padding: 0 8px;
-    border-right: 1px #6D6D6D solid;
-}
-.mediumCardTime {
-    margin: 5px 0;
-    padding: 0 8px;
-}
-.accountUserInformation {
-    display: flex;
-    align-items: flex-start;
-    margin: 0 0 25px 0;
-}
 .finished {
     display: flex;
     justify-content: center;
     margin: 25px auto 0;
+    color: #363636;
+    text-decoration: none;
+}
+.img7 {
+    width: 100px;
+    height: 100px;
+}
+.img6 {
+    width: 175px;
+    height: 175px;
+}
+.img5 {
+    width: 235px;
+    height: 235px;
+}
+.img4 {
+    width: 250px;
+    height: 250px;
+}
+.signoutButton {
+    background: none;
+    margin: 0 0 0 25px;
+    width: 100px;
+    height: 38px;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    color: white;
+    background-color: #3CC5A4;
+}
+.accountNavigationItem {
+    margin: 0 15px 15px 15px;
+}
+.middleBody {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.marginText {
+    margin: 0 0 25px 15px;
+    color: #363636;
+}
+.textInputAccount {
+    padding: 0 15px;
+    margin: 0 0 0 15px;
+    width: 100%;
+    height: 40px;
+    border-radius: 15px;
+    border: none;
+    background-color: white;
+    outline-style: none;
+}
+.updateAccountButton {
+    margin: 50px 0 0 15px;
+    background: none;
+    width: 130px;
+    height: 38px;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    color: white;
+    background-color: #3CC5A4;
+}
+.signinButton {
+    margin: 15px 0 0 15px;
+    background: none;
+    width: 80px;
+    height: 38px;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    color: white;
+    background-color: #3CC5A4;
+}
+.createAccountButton {
+    margin: 15px 0 0 15px;
+    background: none;
+    width: 150px;
+    height: 38px;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    color: white;
+    background-color: #3CC5A4;
+}
+.noAccountButton {
+    margin: 15px 15px 0 0;
+    background: none;
+    width: 160px;
+    height: 38px;
+    border: none;
+    cursor: pointer;
+    color: #363636;
+}
+.alreadyAccountButton {
+    margin: 15px 15px 0 -15px;
+    background: none;
+    width: 230px;
+    height: 38px;
+    border: none;
+    cursor: pointer;
+    color: #363636;
+}
+.multipleInput {
+    margin: 40px 0 0 0;
+    display: flex;
+    flex-direction: column;
+}
+.formSubmit {
+    margin: 40px 0 0 0;
+}
+.textInputSignin {
+    padding: 0 15px;
+    margin: 10px 15px;
+    width: 420;
+    height: 40px;
+    border-radius: 15px;
+    border: none;
+    background-color: #F2F2F2;
+    outline-style: none;
+}
+.recipeEdit {
+    background: none;
+    min-width: 50px;
+    margin: 0 0 0 auto;
+    height: 40px;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    color: white;
+    background-color: #3CC5A4;
+}
+.recipeDelete {
+    margin: 0 0 0 15px;
+    background: none;
+    width: 75px;
+    height: 38px;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    color: #363636;
+    background-color: white;
+}
+.recipeCancel {
+    background: none;
+    margin: 0 0 0 auto;
+    width: 70px;
+    height: 38px;
+    border: none;
+    cursor: pointer;
+    color: #363636;
+}
+.recipeReturn {
+    background: none;
+    margin: 0 0 0 20px;
+    width: 70px;
+    height: 38px;
+    border: none;
+    cursor: pointer;
+    color: #363636;
+    text-decoration: none;
+}
+.recipeAddIngredient {
+    margin: 0 0 30px 0;
+    background: none;
+    width: 135px;
+    height: 38px;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    color: white;
+    background-color: #3CC5A4;
+}
+.recipeAddStep {
+    margin: 0 0 30px 0;
+    background: none;
+    width: 140px;
+    height: 38px;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    color: white;
+    background-color: #3CC5A4;
+}
+.recipeUpdate {
+    margin: 50px 0 0 0;
+    background: none;
+    width: 130px;
+    height: 38px;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    color: white;
+    background-color: #3CC5A4;
+}
+.recipeCreate {
+    margin: 50px 0 0 0;
+    background: none;
+    width: 130px;
+    height: 38px;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    color: white;
+    background-color: #3CC5A4;
+}
+.recipeEditRow {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+}
+.recipeEditRowServings {
+    flex: 1;
+    min-width: 200px;
+    margin: 0 0 0 auto;
+}
+.recipeEditRowIngredients {
+    display: flex;
+    flex-wrap: wrap;
+}
+.recipeEditRowIngredient {
+    flex: 5;
+    min-width: 200px;
+    margin: 0 auto 0 0;
+}
+.recipeEditRowMeasurement {
+    flex: 1;
+    min-width: 100px;
+    margin: 0 auto;
+}
+.recipeEditRowUnit {
+    flex: 1;
+    min-width: 100px;
+    margin: 0 0 0 auto;
+}
+.recipeEditRowSteps {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+}
+.recipeEditRowStep {
+    flex: 1;
+    min-width: 200px;
+}
+.recipeEditPairRow {
+    width: 100%;
+    display: flex;
+}
+.recipeEditPairColumn {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 30px 0 0;
+}
+.textInputRecipe {
+    padding: 0 15px;
+    margin: 0 15px 25px 0;
+    width: 100%;
+    height: 40px;
+    border-radius: 15px;
+    border: none;
+    background-color: white;
+    outline-style: none;
+}
+.textDisplayRecipe {
+    display: flex;
+    align-items: center;
+    margin: 0 15px 25px 0;
+    padding: 11px 15px;
+    width: 100%;
+    height: fit-content;
+    border-radius: 15px;
+    border: none;
+    background-color: white;
+    outline-style: none;
+}
+.recipeRating {
+    margin: 0;
+    padding: 0 10px 0 0;
+    border-right: 1px #6D6D6D solid;
+}
+.recipeDifficulty {
+    margin: 0;
+    padding: 0 10px 0 10px;
+    border-right: 1px #6D6D6D solid;
+}
+.recipeTime {
+    margin: 0;
+    padding: 0 10px 0 10px;
+    border-right: 1px #6D6D6D solid;
+}
+.recipeServings {
+    margin: 0;
+    padding: 0 10px 0 10px;
+}
+.recipeCreator {
+    margin: 0 0 50px 0;
+    color: #363636;
+}
+.recipeCreatorLink {
+    color: #363636;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+.recipeDisplayIngredients {
+    margin: 10px 0 20px 0;
+    padding: 0 0 15px 0;
+    width: 90%;
+    border-bottom: 1px #6D6D6D solid;
+    color: #363636;
+}
+.recipeHeader {
+    margin: 60px 0 35px 0;
+    color: #363636;
+}
+.recipeDisplayStep {
+    color: #363636;
+    margin: 0;
+}
+.recipeDisplayNumber {
+    color: #363636;
+    margin: 0 20px 0 0;
+}
+.recipeSteps {
+    margin: 10px 0 40px 0;
+    width: 90%;
+    display: flex;
+    align-items: flex-start;
+    letter-spacing: 0.5px;
+}
+.recipeAddReview {
+    display: flex;
+    flex-direction: column;
+}
+.textInputReviewRating {
+    padding: 0 15px;
+    margin: 0 0 15px 0;
+    width: 100px;
+    height: 40px;
+    border-radius: 15px;
+    border: none;
+    background-color: white;
+    outline-style: none;
+}
+.addReview {
+    margin: 15px 0 0 0;
+    background: none;
+    width: 135px;
+    height: 40px;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    color: white;
+    background-color: #3CC5A4;
+}
+.reviewCard {
+    width: 450px;
+    margin: 0 25px 25px 0;
+    height: fit-content;
+    border-radius: 15px;
+    background-color: white;
+}
+.reviewCardInformation {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    color: #6D6D6D;
+}
+.reviewCardRating {
+    margin: 20px 20px 0 0;
+    color: #363636;
+}
+.reviewCardComment {
+    margin: 20px 20px 0 20px;
+    padding: 0 0 20px 0;
+}
+.reviewsRow {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    margin: 0 0 -20px 0;
+}
+.displayError {
+    margin: 0 0 25px 0;
+    color: #6D6D6D;
+}
+.accountInformationItem {
+    margin: 0 0 0 30px;
+}
+.accountCreatedRecipes {
+    margin: 50px 0 25px 15px;
+}
+.textareaInput {
+    height: 100%;
+    resize: none;
+    padding: 15px;
+}
+.loadMore {
+    line-height: 36px;
+    text-align: center;
+    margin: 25px 0 0 0;
+    background: none;
+    width: 100px;
+    height: 38px;
+    border: 1px #3CC5A4 solid;
+    border-radius: 14px;
+    cursor: pointer;
+    color: #363636;
+    background-color: white;
+    text-decoration: none;
+    -webkit-user-select: none;  
+    -moz-user-select: none;    
+    -ms-user-select: none;      
+    user-select: none;
 }

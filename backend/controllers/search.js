@@ -52,7 +52,7 @@ exports.getSearchUsers = async (req, res, next) => {
                     '_id': -1
                 } 
             }
-        ]).limit(20);
+        ]).limit(30);
 
         return res.status(201).json({
             success: true,

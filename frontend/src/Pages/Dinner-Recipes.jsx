@@ -27,7 +27,7 @@ const DinnerRecipes = () => {
         }
     }
 
-    window.onscroll = function() {
+    const loadMore = () => {
         if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight && dinnerRecipes.length !== 0) {
             {fetchData(dinnerRecipes[dinnerRecipes.length-1].createdAt)}
         }
@@ -37,7 +37,7 @@ const DinnerRecipes = () => {
         <div className="mainBody">
             {loaded ?
                 <>
-                    <p className="text2" style={{marginLeft: 15}}>Dinner Recipes</p>
+                    <p className="marginText text2">Dinner recipes</p>
                     <div className="recipesRow">
                         { dinnerRecipes && dinnerRecipes.map((recipeReducer, i) => {
                             return (
@@ -49,9 +49,9 @@ const DinnerRecipes = () => {
                     </div>
                     <div className="finished">
                         {finished ?
-                            <p className="text4">You Have Reached the End!</p>
+                            <p className="text4">You have reached the end!</p>
                             :
-                            <p className="text4">Load More!</p>
+                            <p className="loadMore text4" onClick={() => {loadMore()}}>Load more</p>
                         }
                     </div>
                 </>

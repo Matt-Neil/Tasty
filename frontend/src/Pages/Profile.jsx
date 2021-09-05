@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import {Link, useHistory} from "react-router-dom"
+import authAPI from "../API/auth"
 import userAPI from "../API/user"
 import imageAPI from "../API/image"
 import SmallCard from "../Components/Small-Card"
@@ -26,6 +27,8 @@ const Profile = () => {
     const [finishedFollowing, setFinishedFollowing] = useState(false);
     const [finishedSaved, setFinishedSaved] = useState(false);
     const [password, setPassword] = useState("");
+    const [errors, setErrors] = useState({password: undefined});
+    const [mobile, setMobile] = useState(window.innerWidth < 1051);
     const history = useHistory();
 
     useEffect(() => {
@@ -34,7 +37,7 @@ const Profile = () => {
                 const response = await userAPI.get(`/profile`);
 
                 if (response.data.user) {
-                    const feed = await userAPI.get("/feed");
+                    const feed = await userAPI.get(`/feed?createdAt=${new Date().toISOString()}`);
                     const followers = await userAPI.get(`/profile/followers`);
                     const following = await userAPI.get(`/profile/following`);
                     const created = await userAPI.get(`/profile/created?date=${new Date().toISOString()}`);
@@ -62,6 +65,15 @@ const Profile = () => {
         }
     }, [loaded]);
 
+    useEffect(() => {
+        window.addEventListener("resize", updateMedia);
+        return () => window.removeEventListener("resize", updateMedia);
+    });
+
+    const updateMedia = () => {
+        setMobile(window.innerWidth < 1051);
+    };
+
     const uploadPicture = async (e) => {
         e.preventDefault();
 
@@ -74,36 +86,44 @@ const Profile = () => {
     }
 
     const removePicture = async () => {
-        if (pictureFile !== "") {
-            await imageAPI.put('/remove', {picture: pictureName});
-            setPictureFile("");
-            setPictureName(user.picture);
-        }
+        try {
+            if (pictureFile !== "" && pictureName !== "default.png") {
+                await imageAPI.put('/remove', {picture: pictureName});
+                setPictureFile("");
+                setPictureName(user.picture);
+            }
+        } catch (err) {}
     }
 
     const updateUser = async (e) => {
         e.preventDefault();
         e.target.reset();
-        
-        if (pictureName !== user.picture && pictureName !== "default.png") {
-            await imageAPI.put('/remove', {picture: user.picture});
+
+        try {
+            if (pictureName !== user.picture && user.picture !== "default.png") {
+                await imageAPI.put('/remove', {picture: user.picture});
+            }
+    
+            await userAPI.put(`/profile?update=all`, 
+            {
+                picture: pictureName,
+                password: password
+            });
+    
+            setPassword("");
+            setPictureName(user.picture);
+            setErrors();
+        } catch (err) {
+            setErrors(err.response.data.errors);
         }
+    }
 
-        await userAPI.put(`/${user._id}?update=all`, 
-        {
-            picture: pictureName,
-            name: user.name,
-            email: user.email,
-            password: password,
-            date: user.date,
-            followers: user.followers,
-            following: user.following,
-            saved_recipes: user.saved_recipes,
-            created_recipes: user.created_recipes
-        });
+    const signout = async () => {
+        await authAPI.get("/signout");
 
-        setPassword("");
-        setPictureName("");
+        if (typeof window !== 'undefined') {
+            window.location = `/`
+        }
     }
 
     const changeSelection = (selection) => {
@@ -223,7 +243,7 @@ const Profile = () => {
         }
     }
 
-    window.onscroll = function() {
+    const loadMore = () => {
         if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight) {
             if (accountDisplay && created.length !== 0) {
                 {fetchDataCreated(created[created.length-1].createdRecipes.createdAt)}
@@ -249,30 +269,42 @@ const Profile = () => {
                 <>
                     {accountDisplay &&
                         <>
-                            <div style={{display: "flex"}}>
-                                <p>MY ACCOUNT</p>  
-                                <p onClick={() => {changeSelection("feed")}}>My Feed</p>
-                                <p onClick={() => {changeSelection("saved")}}>Saved Recipes</p>
-                                <p onClick={() => {changeSelection("following")}}>Following</p>
-                                <p onClick={() => {changeSelection("followers")}}>Followers</p>
-                                <p onClick={() => {changeSelection("settings")}}>Settings</p>
+                            <div className="accountNavigation text3">
+                                <p className="accountNavigationItem">OVERVIEW</p>  
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("feed")}}>Your feed</p>
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("saved")}}>Saved recipes</p>
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("following")}}>Following</p>
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("followers")}}>Followers</p>
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("settings")}}>Settings</p>
                             </div>
                             <div className="accountUserInformation">
-                                <img src={"https://via.placeholder.com/250"} alt="User Avatar" style={{marginLeft: 15}} />
+                                <img src={`http://localhost:5000/uploads/${user.picture}`} className="marginText img4" alt="User Avatar" />
                                 <div>
-                                    <p className="text1" style={{marginLeft: 30, marginBottom: 0, marginTop: 0}}>{user.name}</p>
-                                    <p className="text5" style={{marginLeft: 30}}>{"Joined " + user.date}</p>
+                                    {mobile &&
+                                        <div className="accountInformation text4">
+                                            <p className="accountInformationItem">{following.length + " Following"}</p>
+                                            <p className="accountInformationItem">{followers.length + " Followers"}</p>
+                                            <p className="accountInformationItem">{created.length + " Recipes"}</p>
+                                        </div>
+                                    }  
+                                    <div className="accountUserName">
+                                        <p className="accountName text1">{user.name}</p>
+                                        <button onClick={() => {signout()}} className="signoutButton text4">Sign out</button>
+                                    </div>
+                                    <p className="accountJoined text5">{"Joined " + user.date}</p>
                                 </div>
-                                <div  style={{display: "flex", marginTop: -5, marginLeft: "auto"}}>
-                                    <p className="text4" style={{marginLeft: 30}}>{following.length + " Following"}</p>
-                                    <p className="text4" style={{marginLeft: 30}}>{followers.length + " Followers"}</p>
-                                    <p className="text4" style={{marginLeft: 30}}>{created.length + " Recipes"}</p>
-                                </div>
+                                {!mobile &&
+                                    <div className="accountInformation text4">
+                                        <p className="accountInformationItem">{following.length + " Following"}</p>
+                                        <p className="accountInformationItem">{followers.length + " Followers"}</p>
+                                        <p className="accountInformationItem">{created.length + " Recipes"}</p>
+                                    </div>
+                                }
                             </div>
-                            <p className="text2" style={{marginLeft: 15, marginTop: 50}}>My Recipes</p>
+                            <p className="accountCreatedRecipes text2">Your recipes</p>
                             {created.length > 0 ?
                                 <>
-                                    <div className="homeRecipesRow">
+                                    <div className="recipesRow">
                                         { created && created.map((recipeReducer, i) => {
                                             return (
                                                 <Link className={"recipeLinkSmall"} to={`/recipes/${recipeReducer.createdRecipes._id}`} key={i}>
@@ -283,62 +315,64 @@ const Profile = () => {
                                     </div>
                                     <div className="finished">
                                         {finishedCreated ?
-                                            <p className="text4">You Have Reached the End!</p>
+                                            <p className="text4">You have reached the end!</p>
                                             :
-                                            <p className="text4">Load More!</p>
+                                            <p className="loadMore text4" onClick={() => {loadMore()}}>Load more</p>
                                         }
                                     </div>
                                 </>
                             :
                                 <div className="finished">
-                                    <p className="text4">You Haven't Created Any Recipes!</p>
+                                    <p className="text4">You haven't created any recipes!</p>
                                 </div>
                             }
                         </>
                     }
                     {feedDisplay &&
                         <>
-                            <div style={{display: "flex"}}>
-                                <p onClick={() => {changeSelection("account")}}>My Account</p>
-                                <p>MY FEED</p>
-                                <p onClick={() => {changeSelection("saved")}}>Saved Recipes</p>
-                                <p onClick={() => {changeSelection("following")}}>Following</p>
-                                <p onClick={() => {changeSelection("followers")}}>Followers</p>
-                                <p onClick={() => {changeSelection("settings")}}>Settings</p>
+                            <div className="accountNavigation text3">
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("account")}}>Overview</p>
+                                <p className="accountNavigationItem">YOUR FEED</p>
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("saved")}}>Saved recipes</p>
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("following")}}>Following</p>
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("followers")}}>Followers</p>
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("settings")}}>Settings</p>
                             </div>
-                            <p className="text2" style={{marginLeft: 15, marginTop: 50}}>My Feed</p>
-                            <Link className="homeLink text6" to="/my-feed">See More</Link>
                             {feed.length > 0 ?
-                                <div className="homeRecipesRow">
-                                    { feed && feed.map((recipeReducer, i) => {
-                                        return (
-                                            <Link className={"recipeLinkSmall"} to={`/recipes/${recipeReducer.feedRecipes}`} key={i}>
-                                                <SmallCard recipeReducer={recipeReducer.feedRecipes} />
-                                            </Link>
-                                        )
-                                    })}
-                                </div>
+                                <>
+                                    <div className="recipesRow">
+                                        { feed && feed.map((recipeReducer, i) => {
+                                            return (
+                                                <Link className={"recipeLinkSmall"} to={`/recipes/${recipeReducer.recipe._id}`} key={i}>
+                                                    <SmallCard recipeReducer={recipeReducer.recipe} />
+                                                </Link>
+                                            )
+                                        })}
+                                    </div>
+                                    <div className="finished">
+                                        <Link className="loadMore text4" to="/my-feed">See more</Link>
+                                    </div>
+                                </>
                             :
                                 <div className="finished">
-                                    <p className="text4">Your Feed is Empty!</p>
+                                    <p className="text4">Your feed is empty!</p>
                                 </div>
                             }
                         </>
                     }
                     {savedDisplay &&
                         <>
-                            <div style={{display: "flex"}}>
-                                <p onClick={() => {changeSelection("account")}}>My Account</p>
-                                <p onClick={() => {changeSelection("feed")}}>My Feed</p>
-                                <p>SAVED RECIPES</p>
-                                <p onClick={() => {changeSelection("following")}}>Following</p>
-                                <p onClick={() => {changeSelection("followers")}}>Followers</p>
-                                <p onClick={() => {changeSelection("settings")}}>Settings</p>
+                            <div className="accountNavigation text3">
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("account")}}>Overview</p>
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("feed")}}>Your feed</p>
+                                <p className="accountNavigationItem">SAVED RECIPES</p>
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("following")}}>Following</p>
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("followers")}}>Followers</p>
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("settings")}}>Settings</p>
                             </div>
-                            <p className="text2" style={{marginLeft: 15, marginTop: 50}}>Saved Recipes</p>
                             {saved.length > 0 ?
                                 <>
-                                    <div className="homeRecipesRow">
+                                    <div className="recipesRow">
                                         { saved && saved.map((recipeReducer, i) => {
                                             return (
                                                 <Link className={"recipeLinkSmall"} to={`/recipes/${recipeReducer.savedRecipes._id}`} key={i}>
@@ -349,121 +383,126 @@ const Profile = () => {
                                     </div>
                                     <div className="finished">
                                         {finishedSaved ?
-                                            <p className="text4">You Have Reached the End!</p>
+                                            <p className="text4">You have reached the end!</p>
                                             :
-                                            <p className="text4">Load More!</p>
+                                            <p className="loadMore text4" onClick={() => {loadMore()}}>Load more</p>
                                         }
                                     </div>
                                 </>
                             :
                                 <div className="finished">
-                                    <p className="text4">Your Saved Recipes is Empty!</p>
+                                    <p className="text4">Your saved recipes is empty!</p>
                                 </div>
                             }
                         </>
                     }
                     {followingDisplay &&
                         <>
-                            <div style={{display: "flex"}}>
-                                <p onClick={() => {changeSelection("account")}}>My Account</p>
-                                <p onClick={() => {changeSelection("feed")}}>My Feed</p>
-                                <p onClick={() => {changeSelection("saved")}}>Saved Recipes</p>
-                                <p>FOLLOWING</p>
-                                <p onClick={() => {changeSelection("followers")}}>Followers</p>
-                                <p onClick={() => {changeSelection("settings")}}>Settings</p>
+                            <div className="accountNavigation text3">
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("account")}}>Overview</p>
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("feed")}}>Your feed</p>
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("saved")}}>Saved recipes</p>
+                                <p className="accountNavigationItem">FOLLOWING</p>
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("followers")}}>Followers</p>
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("settings")}}>Settings</p>
                             </div>
-                            <p className="text2" style={{marginLeft: 15, marginTop: 50}}>Following</p>
                             {following.length > 0 ?
                                 <>
-                                    <div className="homeRecipesRow">
+                                    <div className="recipesRow">
                                         { following && following.map((userReducer, i) => {
                                             return (
                                                 <Link className={"recipeLinkSmall"} to={`/user/${userReducer.followingUsers._id}`} key={i}>
-                                                    <UserCard userReducer={userReducer.followingUsers.name} />
+                                                    <UserCard userReducer={userReducer.followingUsers} />
                                                 </Link>
                                             )
                                         })}
                                     </div>
                                     <div className="finished">
-                                        {finishedFollowers ?
-                                            <p className="text4">You Have Reached the End!</p>
+                                        {finishedFollowing ?
+                                            <p className="text4">You have reached the end!</p>
                                             :
-                                            <p className="text4">Load More!</p>
+                                            <p className="loadMore text4" onClick={() => {loadMore()}}>Load more</p>
                                         }
                                     </div>
                                 </>
                             :
                                 <div className="finished">
-                                    <p className="text4">You Aren't Following Anyone!</p>
+                                    <p className="text4">You aren't following anyone!</p>
                                 </div>
                             }
                         </>
                     }
                     {followersDisplay &&
                         <>
-                            <div style={{display: "flex"}}>
-                                <p onClick={() => {changeSelection("account")}}>My Account</p>
-                                <p onClick={() => {changeSelection("feed")}}>My Feed</p>
-                                <p onClick={() => {changeSelection("saved")}}>Saved Recipes</p>
-                                <p onClick={() => {changeSelection("following")}}>Following</p>
-                                <p>FOLLOWERS</p>
-                                <p onClick={() => {changeSelection("settings")}}>Settings</p>
+                            <div className="accountNavigation text3">
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("account")}}>Overview</p>
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("feed")}}>Your feed</p>
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("saved")}}>Saved recipes</p>
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("following")}}>Following</p>
+                                <p className="accountNavigationItem">FOLLOWERS</p>
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("settings")}}>Settings</p>
                             </div>
-                            <p className="text2" style={{marginLeft: 15, marginTop: 50}}>Followers</p>
                             {followers.length > 0 ?
                                 <>
-                                    <div className="homeRecipesRow">
+                                    <div className="recipesRow">
                                         { followers && followers.map((userReducer, i) => {
                                             return (
                                                 <Link className={"recipeLinkSmall"} to={`/user/${userReducer.followerUsers._id}`} key={i}>
-                                                    <UserCard userReducer={userReducer.followerUsers.name} />
+                                                    <UserCard userReducer={userReducer.followerUsers} />
                                                 </Link>
                                             )
                                         })}
                                     </div>
                                     <div className="finished">
                                         {finishedFollowers ?
-                                            <p className="text4">You Have Reached the End!</p>
+                                            <p className="text4">You have reached the end!</p>
                                             :
-                                            <p className="text4">Load More!</p>
+                                            <p className="loadMore text4" onClick={() => {loadMore()}}>Load more</p>
                                         }
                                     </div>
                                 </>
                             :
                                 <div className="finished">
-                                    <p className="text4">You Don't Have Any Followers!</p>
+                                    <p className="text4">You don't have any followers!</p>
                                 </div>
                             }
                         </>
                     }
                     {settingsDisplay &&
                         <>
-                            <div style={{display: "flex"}}>
-                                <p onClick={() => {changeSelection("account")}}>My Account</p>
-                                <p onClick={() => {changeSelection("feed")}}>My Feed</p>
-                                <p onClick={() => {changeSelection("saved")}}>Saved Recipes</p>
-                                <p onClick={() => {changeSelection("following")}}>Following</p>
-                                <p onClick={() => {changeSelection("followers")}}>Followers</p>
-                                <p>SETTINGS</p>
+                            <div className="accountNavigation text3">
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("account")}}>Overview</p>
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("feed")}}>Your feed</p>
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("saved")}}>Saved recipes</p>
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("following")}}>Following</p>
+                                <p className="accountNavigationItem" onClick={() => {changeSelection("followers")}}>Followers</p>
+                                <p className="accountNavigationItem">SETTINGS</p>
                             </div>
-                            <p className="text2" style={{marginLeft: 15, marginTop: 50}}>Settings</p>
-                            <form method="POST" onSubmit={uploadPicture} encType="multipart/form-data">
+                            <div className="middleBody">
                                 <div>
-                                    <input type="file" name="picture" onChange={e => {setPictureFile(e.target.files[0])}} />
+                                    <p className="marginText text3">Change profile picture</p>
+                                    <img src={`http://localhost:5000/uploads/${pictureName}`} className="img4" alt="User Avatar" style={{marginLeft: 15}} />
+                                    <form method="POST" onSubmit={uploadPicture} encType="multipart/form-data">
+                                        <div>
+                                            <input className="pictureInput" type="file" name="picture" onChange={e => {setPictureFile(e.target.files[0])}} />
+                                        </div>
+                                        <div>
+                                            <input className="pictureUpload text4" type="submit" value="Upload image" />
+                                            <button type="button" className="pictureRemove text4" onClick={() => {removePicture()}}>Remove image</button>
+                                        </div>
+                                    </form>
+                                    <p className="marginText text3">Change password</p>
+                                    <form method="POST" onSubmit={updateUser}>
+                                        <div>
+                                            {errors.password && <p className="displayError text5">{errors.password}</p> }
+                                            <input className="textInputAccount text5" type="password" name="password" placeholder="New password" onChange={e => {setPassword(e.target.value)}} />
+                                        </div>
+                                        <div>
+                                            <input className="updateAccountButton text4" type="submit" value="Save changes" />
+                                        </div>
+                                    </form>
                                 </div>
-                                <div>
-                                    <input type="submit" value="Upload Image" />
-                                </div>
-                            </form>
-                            <button onClick={() => {removePicture()}}>Remove</button>
-                            <form method="POST" onSubmit={updateUser}>
-                                <div>
-                                    <input type="text" name="password" placeholder="password" onChange={e => {setPassword(e.target.value)}} />
-                                </div>
-                                <div>
-                                    <input type="submit" value="Save Changes" />
-                                </div>
-                            </form>
+                            </div>
                         </>
                     }
                 </>

@@ -11,14 +11,14 @@ const UsersSchema = new mongoose.Schema({
     },
     email: { 
         type: String, 
-        required: [true, "Please enter an email"],
+        required: [true, "Please enter a valid email"],
         unique: true,
         lowercase: true,
         validate: [isEmail, 'PLease enter a valid email']
     },
     password: { 
         type: String, 
-        required: [true, "Please enter an password"],
+        required: [true, "Please enter a valid password"],
         minlength: [6, "Your password should be at least 6 characters"]
     },
     date: { 
@@ -48,9 +48,8 @@ const UsersSchema = new mongoose.Schema({
 })
 
 UsersSchema.pre('save', async function (next) {
-    const salt = await bcrypt.genSalt();
-    this.password = await bcrypt.hash(this.password, salt);
-
+    this.password = await bcrypt.hash(this.password.toString(), 10);
+    
     next()
 })
 
@@ -58,7 +57,7 @@ UsersSchema.statics.signin = async function(email, password) {
     const user = await this.findOne({ email });
     
     if (user) {
-        const auth = bcrypt.compare(password, user.password);
+        const auth = await bcrypt.compare(password, user.password);
 
         if (auth) {
             return user

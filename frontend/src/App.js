@@ -16,6 +16,8 @@ import DinnerRecipes from "./Pages/Dinner-Recipes"
 import DessertRecipes from "./Pages/Dessert-Recipes"
 import FeedRecipes from "./Pages/Feed-Recipes"
 import Search from "./Pages/Search"
+import NewRecipe from "./Components/New-Recipe"
+import NotFound from './Pages/NotFound';
 
 export default function App() {
   const [searchPhrase, setSearchPhrase] = useState(null);
@@ -25,12 +27,8 @@ export default function App() {
       <Header setSearchPhrase={setSearchPhrase} />
         <div>
           <Switch>
-            <Route path="/recipes/ingredients/:id">
-              <IngredientRecipes />
-            </Route>
-            <Route path="/search/:id">
-              <Search searchPhrase={searchPhrase} />
-            </Route>
+            <Route path="/recipes/ingredients/:id" render={(props) => <IngredientRecipes key={props.location.key} />} />
+            <Route path="/search/:id" render={(props) => <Search searchPhrase={searchPhrase} key={props.location.key} />} />
             <Route exact path="/recipes/dinner">
               <DinnerRecipes />
             </Route>
@@ -40,29 +38,27 @@ export default function App() {
             <Route path="/my-feed">
               <FeedRecipes />
             </Route>
-            <Route path="/recipes/:id">
-              <ViewRecipe />
-            </Route>
+            <Route path="/recipes/:id" render={(props) => <ViewRecipe key={props.location.key} />} />
             <Route path="/sign-in">
               <SignIn />
             </Route>
-            <Route path="/user/:id">
-              <Account />
-            </Route>
+            <Route path="/user/:id" render={(props) => <Account key={props.location.key} />} />
             <Route path="/my-profile">
               <Profile />
             </Route>
             <Route path="/new-recipe">
               <AddRecipe />
             </Route>
-            <Route path="/edit-recipe/:id">
-              <EditRecipe />
-            </Route>
+            <Route path="/edit-recipe/:id"  render={(props) => <EditRecipe key={props.location.key} />} />
             <Route exact path="/">
               <Home />
             </Route>
+            <Route path="*">
+              <NotFound />
+            </Route>
           </Switch>
         </div>
+        <NewRecipe />
       <Footer />
     </Router>
   );

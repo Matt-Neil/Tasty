@@ -1,7 +1,7 @@
-import React from 'react';
-import BookmarkBorderIcon from '@material-ui/icons/BookmarkBorder';
+import React from 'react'
 
 const LargeCard = ({recipeReducer}) => {
+
     const rating = () => {
         if (recipeReducer.rating === 0) {
             return "No Rating"
@@ -22,8 +22,7 @@ const LargeCard = ({recipeReducer}) => {
 
     return (
         <div className="largeCard">
-            <button className="saveRecipeButton"><BookmarkBorderIcon style={{fontSize: 18, color: "#FFFFFF"}} /></button>
-            <img src="https://via.placeholder.com/525" alt="RecipeImage" />
+            <img src={`http://localhost:5000/uploads/${recipeReducer.picture}`} className="img2" alt="Large Recipe" />
             <p className="largeCardTitle text3">{recipeReducer.title}</p>
             <div className="largeCardInformation text5">
                 <p className="largeCardRating">{rating()}</p>
