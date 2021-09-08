@@ -28,7 +28,7 @@ const DessertRecipes = () => {
     }
 
     const loadMore = () => {
-        if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight && dessertRecipes.length !== 0) {
+        if (dessertRecipes.length !== 0) {
             {fetchData(dessertRecipes[dessertRecipes.length-1].createdAt)}
         }
     };

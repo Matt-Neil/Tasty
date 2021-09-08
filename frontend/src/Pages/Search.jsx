@@ -70,14 +70,12 @@ const Search = ({searchPhrase}) => {
     }
 
     const loadMore = () => {
-        if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight) {
-            if (displayUser && users.length !== 0) {
-                {fetchDataUsers(users[users.length-1]._id)}
-            } 
-            
-            if (!displayUser && recipes.length !== 0) {
-                {fetchDataRecipes(recipes[recipes.length-1]._id)}
-            }
+        if (displayUser && users.length !== 0) {
+            {fetchDataUsers(users[users.length-1]._id)}
+        } 
+        
+        if (!displayUser && recipes.length !== 0) {
+            {fetchDataRecipes(recipes[recipes.length-1]._id)}
         }
     };
 

@@ -152,18 +152,16 @@ const Account = () => {
     }
 
     const loadMore = () => {
-        if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight) {
-            if (accountDisplay && created.length !== 0) {
-                {fetchDataCreated(created[created.length-1].createdRecipes.createdAt)}
-            } 
-            
-            if (followingDisplay && following.length !== 0) {
-                {fetchDataFollowing(following[following.length-1].followingUsers._id)}
-            }
+        if (accountDisplay && created.length !== 0) {
+            {fetchDataCreated(created[created.length-1].createdRecipes.createdAt)}
+        } 
+        
+        if (followingDisplay && following.length !== 0) {
+            {fetchDataFollowing(following[following.length-1].followingUsers._id)}
+        }
 
-            if (followersDisplay && followers.length !== 0) {
-                {fetchDataFollowers(followers[followers.length-1].followerUsers._id)}
-            }
+        if (followersDisplay && followers.length !== 0) {
+            {fetchDataFollowers(followers[followers.length-1].followerUsers._id)}
         }
     }
 

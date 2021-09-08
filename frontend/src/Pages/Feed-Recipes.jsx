@@ -33,7 +33,7 @@ const FeedRecipes = () => {
     }
 
     const loadMore = () => {
-        if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight && feedRecipes.length !== 0) {
+        if (feedRecipes.length !== 0) {
             {fetchData(feedRecipes[feedRecipes.length-1].recipe.createdAt)}
         }
     };
