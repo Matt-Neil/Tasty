@@ -81,7 +81,7 @@ const Search = ({searchPhrase}) => {
 
     return (
         <div className="mainBody">
-            {loaded ?
+            {loaded &&
                 <>
                     {searchPhrase ?
                         <p className="text2">{"Search results for " + searchPhrase}</p>
@@ -152,8 +152,6 @@ const Search = ({searchPhrase}) => {
                         </>
                     }
                 </>
-            :
-                null
             }
         </div>
     )
