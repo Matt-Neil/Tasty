@@ -8,7 +8,7 @@ import MediumCard from "../Components/Medium-Card"
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 
-const Home = () => {
+const Home = ({currentUser}) => {
     const [discoverRecipes, setDiscoverRecipes] = useState();
     const [latestRecipes, setLatestRecipes] = useState();
     const [feedRecipes, setFeedRecipes] = useState();
@@ -42,9 +42,10 @@ const Home = () => {
                 const latest = await recipesAPI.get("/latest");
                 const dinner = await recipesAPI.get("/short/dinner");
                 const dessert = await recipesAPI.get("/short/dessert");
-                const feed = await userAPI.get("/short/feed");
 
-                if (feed.data.user) {
+                if (!currentUser.empty && currentUser.loaded) {
+                    const feed = await userAPI.get("/short/feed");
+
                     setFeedRecipes(feed.data.data);
                 }
 
@@ -129,7 +130,7 @@ const Home = () => {
     }
 
     return (
-        <div className="mainBody">
+        <div>
             {loaded ?
                 <>
                     {feedRecipes ?

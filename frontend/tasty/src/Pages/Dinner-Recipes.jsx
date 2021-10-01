@@ -17,7 +17,7 @@ const DinnerRecipes = () => {
             try {
                 const dinner = await recipeAPI.get(`/dinner?createdAt=${date}`);
     
-                if (dinner.data.data.length === 0) {
+                if (dinner.data.data.length < 20) {
                     setFinished(true)
                 }
 
@@ -34,7 +34,7 @@ const DinnerRecipes = () => {
     };
 
     return (
-        <div className="mainBody">
+        <>
             {loaded ?
                 <>
                     <p className="marginText text2">Dinner recipes</p>
@@ -58,7 +58,7 @@ const DinnerRecipes = () => {
             :
                 null
             }
-        </div>
+        </>
     )
 }
 

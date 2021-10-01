@@ -27,11 +27,7 @@ const AddRecipe = () => {
             try {
                 const response = await authAPI.get(`/`);
 
-                if (response.data.user) {
-                    setUser(response.data.data);
-                } else {
-                    history.replace('/');
-                }
+                setUser(response.data.data);
             } catch (err) {}
         }
         fetchData();
@@ -172,7 +168,7 @@ const AddRecipe = () => {
     };
 
     return (
-        <div className="mainBody">
+        <>
             <div className="innerBody">
                 <p className="text3">Picture</p>
                 <div className="recipeEditPicture">
@@ -284,7 +280,7 @@ const AddRecipe = () => {
                     </div>
                 </form>
             </div>
-        </div>
+        </>
     )
 }
 

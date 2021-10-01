@@ -22,6 +22,14 @@ const Search = ({searchPhrase}) => {
                         const users = await searchAPI.get(`/users?phrase=${urlPhrase}`);
                         const recipes = await searchAPI.get(`/recipes?phrase=${urlPhrase}`);
 
+                        if (users.data.data.length < 30) {
+                            setFinishedUsers(true)
+                        }
+        
+                        if (recipes.data.data.length < 20) {
+                            setFinishedRecipes(true)
+                        }
+
                         setRecipes(recipes.data.data);
                         setUsers(users.data.data);
                         setLoaded(true);
@@ -31,6 +39,14 @@ const Search = ({searchPhrase}) => {
                 } else {
                     const users = await searchAPI.get(`/users?phrase=${searchPhrase}`);
                     const recipes = await searchAPI.get(`/recipes?phrase=${searchPhrase}`);
+
+                    if (users.data.data.length < 30) {
+                        setFinishedUsers(true)
+                    }
+    
+                    if (recipes.data.data.length < 20) {
+                        setFinishedRecipes(true)
+                    }
 
                     setRecipes(recipes.data.data);
                     setUsers(users.data.data);
@@ -46,7 +62,7 @@ const Search = ({searchPhrase}) => {
             try {
                 const results = await searchAPI.get(`/users?phrase=${searchPhrase}&id=${id}`);
     
-                if (results.data.data.length === 0) {
+                if (results.data.data.length < 30) {
                     setFinishedUsers(true)
                 }
 
@@ -60,7 +76,7 @@ const Search = ({searchPhrase}) => {
             try {
                 const results = await searchAPI.get(`/recipes?phrase=${searchPhrase}&id=${id}`);
     
-                if (results.data.data.length === 0) {
+                if (results.data.data.length < 20) {
                     setFinishedRecipes(true)
                 }
 
@@ -80,7 +96,7 @@ const Search = ({searchPhrase}) => {
     };
 
     return (
-        <div className="mainBody">
+        <>
             {loaded &&
                 <>
                     {searchPhrase ?
@@ -153,7 +169,7 @@ const Search = ({searchPhrase}) => {
                     }
                 </>
             }
-        </div>
+        </>
     )
 }
 

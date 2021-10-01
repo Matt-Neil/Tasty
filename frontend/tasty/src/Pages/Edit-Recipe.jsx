@@ -35,12 +35,8 @@ const EditRecipe = () => {
             try {
                 const response = await recipeAPI.get(`/recipe/${recipeID}`);
 
-                if (response.data.creator) {
-                    setRecipe(response.data.data.recipe);
-                    setLoaded(true);
-                } else {
-                    history.replace('/');
-                }
+                setRecipe(response.data.data.recipe);
+                setLoaded(true);
             } catch (err) {}
         }
         fetchData();
@@ -257,7 +253,7 @@ const EditRecipe = () => {
     }
 
     return (
-        <div className="mainBody">
+        <>
             {loaded ?
                 <div className="innerBody">
                     <p className="text3">Picture</p>
@@ -458,7 +454,7 @@ const EditRecipe = () => {
                 :
                 null
             }
-        </div>
+        </>
     )
 }
 

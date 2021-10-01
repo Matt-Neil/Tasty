@@ -18,7 +18,7 @@ const IngredientRecipes = () => {
             try {
                 const ingredient = await recipeAPI.get(`/ingredient/${ingredientID}?createdAt=${date}`);
     
-                if (ingredient.data.data.length === 0) {
+                if (ingredient.data.data.length < 20) {
                     setFinished(true);
                 }
 
@@ -74,7 +74,7 @@ const IngredientRecipes = () => {
     };
 
     return (
-        <div className="mainBody">
+        <>
             {loaded ?
                 <>
                     <p className="marginText text2">{ingredientTitle()}</p>
@@ -98,7 +98,7 @@ const IngredientRecipes = () => {
             :
                 null
             }
-        </div>
+        </>
     )
 }
 

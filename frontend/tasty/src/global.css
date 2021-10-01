@@ -187,10 +187,6 @@ body {
     }
 }
 
-@media screen and (max-width: 1500px) {
-
-}
-
 @media screen and (min-width: 1051px) and (max-width: 1500px) {
     .mainBody {
         margin: 75px auto 150px;
@@ -309,10 +305,6 @@ body {
         margin: 5px 0;
         padding: 0 8px;
     }
-}
-
-@media screen and (min-width: 801px) and (max-width: 1500px) {
-
 }
 
 @media screen and (min-width: 1051px) {
@@ -487,6 +479,12 @@ body {
         font-weight: bold;
         color: #363636;
         text-decoration: none;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
     }
     .leftHeader {
         flex: 1;
@@ -679,6 +677,12 @@ body {
         font-weight: bold;
         color: #363636;
         text-decoration: none;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
     }
     .leftHeader {
         flex: 1;
@@ -1191,6 +1195,7 @@ body {
 }
 .accountNavigationItem {
     margin: 0 15px 15px 15px;
+    cursor: pointer;
 }
 .middleBody {
     display: flex;
@@ -1273,7 +1278,7 @@ body {
 .textInputSignin {
     padding: 0 15px;
     margin: 10px 15px;
-    width: 420;
+    max-width: 420px;
     height: 40px;
     border-radius: 15px;
     border: none;

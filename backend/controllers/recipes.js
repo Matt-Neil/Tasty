@@ -28,18 +28,9 @@ exports.getRecipe = async (req, res, next) => {
             const related = await Recipes.aggregate([
                 { 
                     $match: { 
-                        $or: [
-                            {
-                                $text: { 
-                                    $search: recipe.title
-                                }
-                            },
-                            {
-                                meal: { 
-                                    $eq: recipe.meal
-                                }
-                            }
-                        ],
+                        $text: { 
+                            $search: recipe.title
+                        },
                         _id: {
                             $ne: recipe._id
                         }
@@ -101,6 +92,7 @@ exports.getRecipe = async (req, res, next) => {
             }
         }
     } catch (err) {
+        console.log(err)
         res.status(500).json({
             success: false,
             error: 'Server Error'
@@ -110,17 +102,12 @@ exports.getRecipe = async (req, res, next) => {
 
 exports.addRecipe = async (req, res, next) => {
     try {
-        if (res.locals.currentUser) {
-            const recipe = await Recipes.create(req.body);
+        const recipe = await Recipes.create(req.body);
 
-            res.status(201).json({
-                success: true,
-                user: true,
-                data: recipe._id
-            })
-        } else {
-            res.send({ user: false })
-        }
+        res.status(201).json({
+            success: true,
+            data: recipe._id
+        })
     } catch (err) {
         const errors = handleErrors(err);
         res.status(400).json({
@@ -132,82 +119,78 @@ exports.addRecipe = async (req, res, next) => {
 
 exports.updateRecipe = async (req, res, next) => {
     try {
-        if (res.locals.currentUser) {
-            const recipe = await Recipes.findById(req.params.id);
+        const recipe = await Recipes.findById(req.params.id);
         
-            if (req.query.update === "all") {
-                const { title, picture, ingredients, steps, time, meal, servings, description, difficulty } = req.body;
-        
-                if (!recipe) {
-                    res.status(404).json({
-                        success: false,
-                        error: "No Recipe Found."
-                    })
-                } else {
-                    recipe.title = title;
-                    recipe.ingredients = ingredients;
-                    recipe.reviews = recipe.reviews;
-                    recipe.picture = picture;
-                    recipe.steps = steps;
-                    recipe.time = time;
-                    recipe.meal = meal;
-                    recipe.rating = recipe.rating;
-                    recipe.servings = servings;
-                    recipe.description = description;
-                    recipe.difficulty = difficulty;
-                    recipe.date = recipe.date;
-                    recipe.creator = recipe.creator;
-        
-                    await recipe.save();
-        
-                    res.status(201).json({
-                        success: true,
-                        data: recipe
-                    })
-                }
+        if (req.query.update === "all") {
+            const { title, picture, ingredients, steps, time, meal, servings, description, difficulty } = req.body;
+    
+            if (!recipe) {
+                res.status(404).json({
+                    success: false,
+                    error: "No Recipe Found."
+                })
             } else {
-                if (!recipe) {
-                    res.status(404).json({
-                        success: false,
-                        error: "No Recipe Found."
-                    })
-                } else {
-                    const review = {
-                        comment: req.body.review.comment,
-                        rating: req.body.review.rating,
-                        author: res.locals.currentUser._id,
-                        date: req.body.review.date
-                    }
-                    const updatedReviews = recipe.reviews.concat(review);
-
-                    const updatedRating = updatedReviews.reduce(function averageRatings(total, ratings) {
-                        return total + ratings.rating
-                    }, 0) / updatedReviews.length;
-        
-                    recipe.title = recipe.title;
-                    recipe.ingredients = recipe.ingredients;
-                    recipe.reviews = updatedReviews;
-                    recipe.picture = recipe.picture;
-                    recipe.steps = recipe.steps;
-                    recipe.time = recipe.time;
-                    recipe.meal = recipe.meal;
-                    recipe.rating = Math.round(updatedRating * 10) / 10;
-                    recipe.servings = recipe.servings;
-                    recipe.description = recipe.description;
-                    recipe.difficulty = recipe.difficulty;
-                    recipe.date = recipe.date;
-                    recipe.creator = recipe.creator;
-        
-                    await recipe.save();
-        
-                    res.status(201).json({
-                        success: true,
-                        data: recipe
-                    })
-                }
+                recipe.title = title;
+                recipe.ingredients = ingredients;
+                recipe.reviews = recipe.reviews;
+                recipe.picture = picture;
+                recipe.steps = steps;
+                recipe.time = time;
+                recipe.meal = meal;
+                recipe.rating = recipe.rating;
+                recipe.servings = servings;
+                recipe.description = description;
+                recipe.difficulty = difficulty;
+                recipe.date = recipe.date;
+                recipe.creator = recipe.creator;
+    
+                await recipe.save();
+    
+                res.status(201).json({
+                    success: true,
+                    data: recipe
+                })
             }
         } else {
-            res.send({ user: false })
+            if (!recipe) {
+                res.status(404).json({
+                    success: false,
+                    error: "No Recipe Found."
+                })
+            } else {
+                const review = {
+                    comment: req.body.review.comment,
+                    rating: req.body.review.rating,
+                    author: res.locals.currentUser._id,
+                    date: req.body.review.date
+                }
+                const updatedReviews = recipe.reviews.concat(review);
+
+                const updatedRating = updatedReviews.reduce(function averageRatings(total, ratings) {
+                    return total + ratings.rating
+                }, 0) / updatedReviews.length;
+    
+                recipe.title = recipe.title;
+                recipe.ingredients = recipe.ingredients;
+                recipe.reviews = updatedReviews;
+                recipe.picture = recipe.picture;
+                recipe.steps = recipe.steps;
+                recipe.time = recipe.time;
+                recipe.meal = recipe.meal;
+                recipe.rating = Math.round(updatedRating * 10) / 10;
+                recipe.servings = recipe.servings;
+                recipe.description = recipe.description;
+                recipe.difficulty = recipe.difficulty;
+                recipe.date = recipe.date;
+                recipe.creator = recipe.creator;
+    
+                await recipe.save();
+    
+                res.status(201).json({
+                    success: true,
+                    data: recipe
+                })
+            }
         }
     } catch (err) {
         const errors = handleErrors(err);
@@ -220,53 +203,51 @@ exports.updateRecipe = async (req, res, next) => {
 
 exports.deleteRecipe = async (req, res, next) => {
     try {
-        if (res.locals.currentUser) {
-            const recipe = await Recipes.findById(req.params.id);
-            const creator = await Users.findById(recipe.creator);
-            const users = await Users.find({ saved_recipes: { $in: [req.params.id] } });
+        const recipe = await Recipes.findById(req.params.id);
+        const creator = await Users.findById(recipe.creator);
+        const users = await Users.find({ saved_recipes: { $in: [req.params.id] } });
 
-            if (!recipe) {
-                res.status(404).json({
-                    success: false,
-                    error: "No recipe Found."
-                })
-            } else {
-                creator.created_recipes.splice(creator.created_recipes.indexOf(req.params.id), 1);
+        if (!recipe) {
+            res.status(404).json({
+                success: false,
+                error: "No recipe Found."
+            })
+        } else {
+            creator.created_recipes.splice(creator.created_recipes.indexOf(req.params.id), 1);
 
-                creator.picture = creator.picture;
-                creator.followers = creator.followers;
-                creator.following = creator.following;
-                creator.created_recipes = creator.created_recipes;
-                creator.saved_recipes = creator.saved_recipes;
-                creator.name = creator.name;
-                creator.email = creator.email;
-                creator.password = creator.password;
-                creator.date = creator.date;
+            creator.picture = creator.picture;
+            creator.followers = creator.followers;
+            creator.following = creator.following;
+            creator.created_recipes = creator.created_recipes;
+            creator.saved_recipes = creator.saved_recipes;
+            creator.name = creator.name;
+            creator.email = creator.email;
+            creator.password = creator.password;
+            creator.date = creator.date;
 
-                {users.map(async user => {
-                    user.saved_recipes.splice(user.saved_recipes.indexOf(req.params.id), 1);
+            {users.map(async user => {
+                user.saved_recipes.splice(user.saved_recipes.indexOf(req.params.id), 1);
 
-                    user.picture = user.picture;
-                    user.followers = user.followers;
-                    user.following = user.following;
-                    user.created_recipes = user.created_recipes;
-                    user.saved_recipes = user.saved_recipes;
-                    user.name = user.name;
-                    user.email = user.email;
-                    user.password = user.password;
-                    user.date = user.date;
+                user.picture = user.picture;
+                user.followers = user.followers;
+                user.following = user.following;
+                user.created_recipes = user.created_recipes;
+                user.saved_recipes = user.saved_recipes;
+                user.name = user.name;
+                user.email = user.email;
+                user.password = user.password;
+                user.date = user.date;
 
-                    await user.save();
-                })}
+                await user.save();
+            })}
 
-                await creator.save();
-                await recipe.remove();
+            await creator.save();
+            await recipe.remove();
 
-                res.status(201).json({
-                    success: true,
-                    data: {}
-                })
-            }
+            res.status(201).json({
+                success: true,
+                data: {}
+            })
         }
     } catch (err) {
         res.status(500).json({

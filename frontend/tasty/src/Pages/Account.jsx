@@ -30,17 +30,30 @@ const Account = () => {
                 const followers = await userAPI.get(`/${userID}/followers`);
                 const following = await userAPI.get(`/${userID}/following`);
                 const created = await userAPI.get(`/${userID}/created?date=${new Date().toISOString()}`);
+                
+                if (!user.data.data.user) {
 
-                setUser(user.data.data);
-                if (!user.data.user) {
+                    if (created.data.data.length < 20) {
+                        setFinishedCreated(true)
+                    }
+    
+                    if (following.data.data.length < 30) {
+                        setFinishedFollowing(true)
+                    }
+    
+                    if (followers.data.data.length < 30) {
+                        setFinishedFollowers(true)
+                    }
+
                     setFollowed(user.data.followed);
+                    setUser(user.data.data);
+                    setFollowers(followers.data.data);
+                    setFollowing(following.data.data);
+                    setCreated(created.data.data);
+                    setLoaded(true);
                 } else {
                     history.replace('/my-profile');
                 }
-                setFollowers(followers.data.data);
-                setFollowing(following.data.data);
-                setCreated(created.data.data);
-                setLoaded(true);
             } catch (err) {
                 history.replace('/');
             }
@@ -87,7 +100,7 @@ const Account = () => {
             try {
                 const results = await userAPI.get(`/${userID}/created?date=${date}`);
     
-                if (results.data.data.length === 0) {
+                if (results.data.data.length < 20) {
                     setFinishedCreated(true)
                 }
 
@@ -101,7 +114,7 @@ const Account = () => {
             try {
                 const results = await userAPI.get(`/${userID}/followers?id=${id}`);
     
-                if (results.data.data.length === 0) {
+                if (results.data.data.length < 30) {
                     setFinishedFollowers(true)
                 }
 
@@ -115,7 +128,7 @@ const Account = () => {
             try {
                 const results = await userAPI.get(`/${userID}/following?id=${id}`);
     
-                if (results.data.data.length === 0) {
+                if (results.data.data.length < 30) {
                     setFinishedFollowing(true)
                 }
 
@@ -166,7 +179,7 @@ const Account = () => {
     }
 
     return (
-        <div className="mainBody">
+        <>
             {loaded &&
                 <>
                     {accountDisplay &&
@@ -309,7 +322,7 @@ const Account = () => {
                     }
                 </>
             }
-        </div>
+        </>
     )
 }
 

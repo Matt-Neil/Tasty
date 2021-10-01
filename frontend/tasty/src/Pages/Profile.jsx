@@ -35,24 +35,35 @@ const Profile = () => {
         const fetchDataInitial = async () => {
             try {
                 const response = await userAPI.get(`/profile`);
+                const feed = await userAPI.get(`/feed?createdAt=${new Date().toISOString()}`);
+                const followers = await userAPI.get(`/profile/followers`);
+                const following = await userAPI.get(`/profile/following`);
+                const created = await userAPI.get(`/profile/created?date=${new Date().toISOString()}`);
+                const saved = await userAPI.get(`/profile/saved?date=${new Date().toISOString()}`);
 
-                if (response.data.user) {
-                    const feed = await userAPI.get(`/feed?createdAt=${new Date().toISOString()}`);
-                    const followers = await userAPI.get(`/profile/followers`);
-                    const following = await userAPI.get(`/profile/following`);
-                    const created = await userAPI.get(`/profile/created?date=${new Date().toISOString()}`);
-                    const saved = await userAPI.get(`/profile/saved?date=${new Date().toISOString()}`);
-
-                    setUser(response.data.data);
-                    setFeed(feed.data.data);
-                    setFollowers(followers.data.data);
-                    setFollowing(following.data.data);
-                    setCreated(created.data.data);
-                    setSaved(saved.data.data)
-                    setLoaded(true);
-                } else {
-                    history.replace('/sign-in');
+                if (followers.data.data.length < 30) {
+                    setFinishedFollowers(true)
                 }
+
+                if (following.data.data.length < 30) {
+                    setFinishedFollowing(true)
+                }
+
+                if (created.data.data.length < 20) {
+                    setFinishedCreated(true)
+                }
+
+                if (saved.data.data.length < 30) {
+                    setFinishedSaved(true)
+                }
+
+                setUser(response.data.data);
+                setFeed(feed.data.data);
+                setFollowers(followers.data.data);
+                setFollowing(following.data.data);
+                setCreated(created.data.data);
+                setSaved(saved.data.data)
+                setLoaded(true);
             } catch (err) {}
         }
         fetchDataInitial();
@@ -192,7 +203,7 @@ const Profile = () => {
             try {
                 const results = await userAPI.get(`/profile/created?date=${date}`);
     
-                if (results.data.data.length === 0) {
+                if (results.data.data.length < 20) {
                     setFinishedCreated(true)
                 }
 
@@ -206,7 +217,7 @@ const Profile = () => {
             try {
                 const results = await userAPI.get(`/profile/followers?id=${id}`);
     
-                if (results.data.data.length === 0) {
+                if (results.data.data.length < 30) {
                     setFinishedFollowers(true)
                 }
 
@@ -220,7 +231,7 @@ const Profile = () => {
             try {
                 const results = await userAPI.get(`/profile/following?id=${id}`);
     
-                if (results.data.data.length === 0) {
+                if (results.data.data.length < 30) {
                     setFinishedFollowing(true)
                 }
 
@@ -234,7 +245,7 @@ const Profile = () => {
             try {
                 const results = await userAPI.get(`/profile/saved?date=${date}`);
     
-                if (results.data.data.length === 0) {
+                if (results.data.data.length < 20) {
                     setFinishedSaved(true)
                 }
 
@@ -243,26 +254,32 @@ const Profile = () => {
         }
     }
 
-    const loadMore = () => {
+    const loadMoreCreated = () => {
         if (accountDisplay && created.length !== 0) {
             {fetchDataCreated(created[created.length-1].createdRecipes.createdAt)}
         } 
-        
+    }
+
+    const loadMoreFollowing = () => {
         if (followingDisplay && following.length !== 0) {
             {fetchDataFollowing(following[following.length-1].followingUsers._id)}
         }
+    }
 
+    const loadMoreFollowers = () => {
         if (followersDisplay && followers.length !== 0) {
             {fetchDataFollowers(followers[followers.length-1].followerUsers._id)}
         }
+    }
 
+    const loadMoreSaved = () => {
         if (savedDisplay && saved.length !== 0) {
             {fetchDataSaved(saved[saved.length-1].savedRecipes.createdAt)}
-        }
+        } 
     }
 
     return (
-        <div className="mainBody">
+        <>
             {loaded &&
                 <>
                     {accountDisplay &&
@@ -315,7 +332,7 @@ const Profile = () => {
                                         {finishedCreated ?
                                             <p className="text4">You have reached the end!</p>
                                             :
-                                            <p className="loadMore text4" onClick={() => {loadMore()}}>Load more</p>
+                                            <p className="loadMore text4" onClick={() => {loadMoreCreated()}}>Load more</p>
                                         }
                                     </div>
                                 </>
@@ -383,7 +400,7 @@ const Profile = () => {
                                         {finishedSaved ?
                                             <p className="text4">You have reached the end!</p>
                                             :
-                                            <p className="loadMore text4" onClick={() => {loadMore()}}>Load more</p>
+                                            <p className="loadMore text4" onClick={() => {loadMoreSaved()}}>Load more</p>
                                         }
                                     </div>
                                 </>
@@ -419,7 +436,7 @@ const Profile = () => {
                                         {finishedFollowing ?
                                             <p className="text4">You have reached the end!</p>
                                             :
-                                            <p className="loadMore text4" onClick={() => {loadMore()}}>Load more</p>
+                                            <p className="loadMore text4" onClick={() => {loadMoreFollowing()}}>Load more</p>
                                         }
                                     </div>
                                 </>
@@ -455,7 +472,7 @@ const Profile = () => {
                                         {finishedFollowers ?
                                             <p className="text4">You have reached the end!</p>
                                             :
-                                            <p className="loadMore text4" onClick={() => {loadMore()}}>Load more</p>
+                                            <p className="loadMore text4" onClick={() => {loadMoreFollowers()}}>Load more</p>
                                         }
                                     </div>
                                 </>
@@ -505,7 +522,7 @@ const Profile = () => {
                     }
                 </>
             }
-        </div>
+        </>
     )
 }
 

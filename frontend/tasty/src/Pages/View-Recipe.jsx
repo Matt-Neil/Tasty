@@ -106,7 +106,7 @@ const Recipe = () => {
     }
 
     return (
-        <div className="mainBody">
+        <>
             {loaded ?
                 <div className="innerBody">
                     <p className="recipeTitle">{recipe.title}</p>
@@ -257,7 +257,7 @@ const Recipe = () => {
                 :
                 null
             }
-        </div>
+        </>
     )
 }
 

@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import {Link, useHistory} from "react-router-dom"
+import {Link} from "react-router-dom"
 import userAPI from "../API/user"
 import SmallCard from "../Components/Small-Card"
 
@@ -7,7 +7,6 @@ const FeedRecipes = () => {
     const [loaded, setLoaded] = useState(false);
     const [feedRecipes, setFeedRecipes] = useState([]);
     const [finished, setFinished] = useState(false);
-    const history = useHistory();
 
     useEffect(() => {
         fetchData(new Date().toISOString());
@@ -18,16 +17,12 @@ const FeedRecipes = () => {
             try {
                 const feed = await userAPI.get(`/feed?createdAt=${date}`);
 
-                if (feed.data.user) {
-                    if (feed.data.data.length === 0) {
-                        setFinished(true)
-                    } else {
-                        setFeedRecipes(feedRecipes => [...feedRecipes, ...feed.data.data]);
-                    }
-                    setLoaded(true);
-                } else {
-                    history.replace('/sign-in');
+                if (feed.data.data.length < 20) {
+                    setFinished(true)
                 }
+
+                setFeedRecipes(feedRecipes => [...feedRecipes, ...feed.data.data]);
+                setLoaded(true);
             } catch (err) {}
         }
     }
@@ -39,7 +34,7 @@ const FeedRecipes = () => {
     };
 
     return (
-        <div className="mainBody">
+        <>
             {loaded ?
                 <>
                     <p className="marginText text2">Your feed</p>
@@ -63,7 +58,7 @@ const FeedRecipes = () => {
             :
                 null
             }
-        </div>
+        </>
     )
 }
 

@@ -1,6 +1,7 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useContext} from 'react'
 import {useHistory} from "react-router-dom"
 import authAPI from "../API/auth"
+import { CurrentUserContext } from '../Contexts/currentUserContext';
 const moment = require('moment');
 
 const SignIn = ({setMessage}) => {
@@ -11,6 +12,7 @@ const SignIn = ({setMessage}) => {
     const [signinEmail, setSigninEmail] = useState("samantha.dickens@email.com");
     const [signinPassword, setSigninPassword] = useState("password");
     const [errors, setErrors] = useState({email: undefined, password: undefined});
+    const {changeCurrentUser} = useContext(CurrentUserContext);
     const history = useHistory();
 
     useEffect(() => {
@@ -44,21 +46,14 @@ const SignIn = ({setMessage}) => {
                 created_recipes: []
             });
 
-            if (createResponse.data.data.errors) {
-                console.log(createResponse.data.data.errors)
-            }
-
-            if (createResponse.data.data.user) {
-                setName("");
-                setEmail("");
-                setPassword("");
-                setSignin(true);
+            if (createResponse.data.data && typeof window !== 'undefined') {
+                changeCurrentUser({
+                    id: createResponse.data.data
+                })
 
                 setMessage("Account Created!")
         
-                if (typeof window !== 'undefined') {
-                    window.location = `/`
-                }
+                window.location = "/"
             }
         } catch (err) {}
     }
@@ -73,15 +68,12 @@ const SignIn = ({setMessage}) => {
                 password: signinPassword
             });
 
-            if (signinResponse.data.data.user) {
-                setName("");
-                setEmail("");
-                setPassword("");
-                setSignin(true);
-        
-                if (typeof window !== 'undefined') {
-                    window.location = `/`
-                }
+            if (signinResponse.data.data && typeof window !== 'undefined') {
+                changeCurrentUser({
+                    id: signinResponse.data.data
+                })
+
+                window.location = "/"
             }
         } catch (err) {
             setErrors(err.response.data.errors);
@@ -89,7 +81,7 @@ const SignIn = ({setMessage}) => {
     }
     
     return (
-        <div className="mainBody">
+        <>
             {signin ?
                 <div className="middleBody">
                     <form className="signinBody" method="POST" onSubmit={signinUser}>
@@ -122,7 +114,7 @@ const SignIn = ({setMessage}) => {
                     </form>
                 </div>
             }
-        </div>
+        </>
     )
 }
 
