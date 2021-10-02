@@ -65,6 +65,34 @@ body {
     color: #363636;
     font-size: 30px;
 }
+.accountUserButtons {
+    display: flex;
+    align-items: center;
+}
+.openChatButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 15px 15px 0 auto;
+    width: 60px;
+    height: 60px;
+    border-radius: 30px;
+    background-color: #3CC5A4;
+    color: white;
+    text-decoration: none;
+}
+.newRecipeButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 15px 15px 15px auto;
+    width: 60px;
+    height: 60px;
+    border-radius: 30px;
+    background-color: #3CC5A4;
+    color: white;
+    text-decoration: none;
+}
 
 @media screen and (min-width: 1501px) {
     .mainBody {
@@ -537,21 +565,13 @@ body {
         position: relative;
         bottom: 0;
     }
-    .newRecipeButton {
+    .bottomButtons {
         display: flex;
+        flex-direction: column;
         position: sticky;
-        right: 0;
+        right: 15px;
         bottom: 15px;
-        align-items: center;
-        justify-content: center;
-        margin: 15px 15px 15px auto;
-        width: 140px;
-        padding: 0 5px 0 0;
-        height: 60px;
-        border-radius: 20px;
-        background-color: #3CC5A4;
-        color: white;
-        text-decoration: none;
+        height: fit-content;
     }
     .accountJoined {
         margin: 15px 0 0 30px;
@@ -736,21 +756,6 @@ body {
         width: 100%;
         position: relative;
         bottom: 0;
-    }
-    .newRecipeButton {
-        display: flex;
-        position: sticky;
-        right: 0;
-        bottom: 15px;
-        align-items: center;
-        justify-content: center;
-        margin: 15px 15px 15px auto;
-        width: 50px;
-        height: 50px;
-        border-radius: 25px;
-        background-color: #3CC5A4;
-        color: white;
-        text-decoration: none;
     }
     .accountUserName {
         display: flex;
@@ -1118,7 +1123,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 0 0 25px;
+    margin: 0 -10px 0 25px;
     width: fit-content;
     height: 38px;
     border: none;
@@ -1126,9 +1131,7 @@ body {
     cursor: pointer;
     color: white;
     background-color: #3CC5A4;
-}
-.followUserText {
-    margin: 0 10px 0 0;
+    text-decoration: none;
 }
 .homeLink {
     color: #3CC5A4;

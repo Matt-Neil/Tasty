@@ -1,12 +1,14 @@
 import React, {useState, useEffect} from 'react'
 import {Link, useParams, useHistory} from "react-router-dom"
 import userAPI from "../API/user"
+import chatsAPI from "../API/chats"
 import UserCard from "../Components/User-Card"
 import SmallCard from "../Components/Small-Card"
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
+import ChatIcon from '@mui/icons-material/Chat';
 
-const Account = () => {
+const Account = ({currentUser}) => {
     const [user, setUser] = useState();
     const [followers, setFollowers] = useState();
     const [following, setFollowing] = useState();
@@ -17,6 +19,7 @@ const Account = () => {
     const [finishedCreated, setFinishedCreated] = useState(false);
     const [finishedFollowers, setFinishedFollowers] = useState(false);
     const [finishedFollowing, setFinishedFollowing] = useState(false);
+    const [chat, setChat] = useState();
     const [loaded, setLoaded] = useState(false);
     const [followed, setFollowed] = useState();
     const [mobile, setMobile] = useState(window.innerWidth < 1051);
@@ -30,6 +33,7 @@ const Account = () => {
                 const followers = await userAPI.get(`/${userID}/followers`);
                 const following = await userAPI.get(`/${userID}/following`);
                 const created = await userAPI.get(`/${userID}/created?date=${new Date().toISOString()}`);
+                const chat = await chatsAPI.get(`/${userID}/check`);
                 
                 if (!user.data.data.user) {
 
@@ -45,6 +49,7 @@ const Account = () => {
                         setFinishedFollowers(true)
                     }
 
+                    setChat(chat.data.data)
                     setFollowed(user.data.followed);
                     setUser(user.data.data);
                     setFollowers(followers.data.data);
@@ -164,6 +169,28 @@ const Account = () => {
         setFollowed(followed => !followed)
     }
 
+    const openChat = async () => {
+        try {
+            await chatsAPI.put(`/`, {
+                id: chat.id
+            })
+
+            history.push("/chat")
+        } catch (err) {}
+    }
+
+    const createChat = async () => {
+        try {
+            await chatsAPI.post(`/`, {
+                user1: currentUser.id,
+                user2: userID,
+                messages: []
+            })
+
+            history.push("/chat")
+        } catch (err) {}
+    }
+
     const loadMore = () => {
         if (accountDisplay && created.length !== 0) {
             {fetchDataCreated(created[created.length-1].createdRecipes.createdAt)}
@@ -201,21 +228,34 @@ const Account = () => {
                                     }  
                                     <div className="accountUserName">
                                         <p className="accountName text1">{user.name}</p>
-                                        <>
-                                            {followed ?
-                                                <button className="followUserButton"
-                                                        onClick={() => {handleFollow()}}>
-                                                            <FavoriteIcon style={{fontSize: 20, color: "#FFFFFF", marginRight: 7, marginLeft: 7}} />
-                                                            <p className="followUserText text4">Unfollow</p>
-                                                </button>
-                                            :
-                                                <button className="followUserButton"
-                                                        onClick={() => {handleFollow()}}>
-                                                            <FavoriteBorderIcon style={{fontSize: 20, color: "#FFFFFF", marginRight: 7, marginLeft: 7}} />
-                                                            <p className="followUserText text4">Follow</p>
-                                                </button>
+                                        <div className="accountUserButtons">
+                                            {currentUser.id !== userID &&
+                                                <>
+                                                    {followed ?
+                                                        <button className="followUserButton"
+                                                                onClick={() => {handleFollow()}}>
+                                                                    <FavoriteIcon style={{fontSize: 20, color: "#FFFFFF", marginRight: 7, marginLeft: 7}} />
+                                                        </button>
+                                                    :
+                                                        <button className="followUserButton"
+                                                                onClick={() => {handleFollow()}}>
+                                                                    <FavoriteBorderIcon style={{fontSize: 20, color: "#FFFFFF", marginRight: 7, marginLeft: 7}} />
+                                                        </button>
+                                                    }
+                                                    {chat.check ?
+                                                        <button className="followUserButton"
+                                                                onClick={() => {openChat()}}>
+                                                                    <ChatIcon style={{fontSize: 20, color: "#FFFFFF", marginRight: 7, marginLeft: 7}} />
+                                                        </button>
+                                                    :
+                                                        <button className="followUserButton"
+                                                                onClick={() => {createChat()}}>
+                                                                    <ChatIcon style={{fontSize: 20, color: "#FFFFFF", marginRight: 7, marginLeft: 7}} />
+                                                        </button>
+                                                    }
+                                                </>
                                             }
-                                        </>
+                                        </div>
                                     </div>
                                     <p className="accountJoined text5">{"Joined " + user.date}</p>
                                 </div>

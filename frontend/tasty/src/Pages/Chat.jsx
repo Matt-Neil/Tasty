@@ -1,40 +1,69 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import chatsAPI from "../API/chats"
+import { ChatContext } from '../Contexts/chatContext';
 const io = require("socket.io-client");
 
 const Chat = () => {
     const [sendMessage, setSendMessage] = useState("")
     const [chat, setChat] = useState()
+    const [chats, setChats] = useState()
     const [messages, setMessages] = useState([])
     const [loaded, setLoaded] = useState(false)
     const [finished, setFinished] = useState(false)
     const [socket, setSocket] = useState()
+    const {chatID, changeChatID} = useContext(ChatContext);
 
     useEffect(() => {
-        fetchData(new Date().toISOString())
-    }, [])
-
-    const fetchData = async (date) => {
-        if (!finished) {
+        const fetchChats = async () => {
             try {
-                if (!chat) {
-                    const chat = await chatsAPI.get("/6155ae82a78484ddcf767573");
-
-                    setChat(chat.data.data)
+                const chats = await chatsAPI.get(`/`);
+    
+                if (chatID === undefined) {
+                    changeChatID(chats.data.data[0]._id)
                 }
-                
-                const messages = await chatsAPI.get(`/6155ae82a78484ddcf767573/messages?date=${date}`);
-    
-                messages.data.data.reverse()
-    
-                if (messages.data.data.length < 20) {
-                    setFinished(true)
-                }
-    
-                setMessages(previousState => [...messages.data.data, ...previousState])
-                setLoaded(true)
+                setChats(chats.data.data)
             } catch (err) {}
         }
+        fetchChats()
+    }, [])
+
+    useEffect(() => {
+        if (chatID) {
+            fetchData(new Date().toISOString())
+        }
+    }, [chatID])
+
+    const fetchData = async (date) => {
+        try {
+            if (!chat || chatID !== chat._id) {
+                const chat = await chatsAPI.get(`/${chatID}`);
+                const loadMessages = await chatsAPI.get(`/${chatID}/messages?date=${date}`);
+
+                loadMessages.data.data.reverse()
+
+                if (loadMessages.data.data.length < 50) {
+                    setFinished(true)
+                } else {
+                    setFinished(false)
+                }
+
+                setChat(chat.data.data)
+                setMessages(loadMessages.data.data)
+            } else {
+                if (!finished) {
+                    const loadMessages = await chatsAPI.get(`/${chatID}/messages?date=${date}`);
+
+                    loadMessages.data.data.reverse()
+
+                    if (loadMessages.data.data.length < 50) {
+                        setFinished(true)
+                    }
+
+                    setMessages(previousState => [...loadMessages.data.data, ...previousState])
+                }
+            }
+            setLoaded(true)
+        } catch (err) {}
     }
 
     useEffect(() => {
@@ -42,7 +71,7 @@ const Chat = () => {
             const newSocket = io("http://127.0.0.1:5000",
                 {
                     query: {
-                        id: chat._id
+                        id: chatID
                     },
                     withCredentials: true,
                     transports: ['websocket', 'polling', 'flashsocket']
@@ -64,12 +93,10 @@ const Chat = () => {
         return () => socket.off(['receiveMessage'])
     }, [socket])
 
-    console.log(socket)
-
     const sendMessageForm = async (e) => {
         e.preventDefault();
 
-        const newMessage = await chatsAPI.put('/6155ae82a78484ddcf767573', {
+        const newMessage = await chatsAPI.put(`/${chatID}`, {
             message: sendMessage
         })
 
@@ -80,7 +107,7 @@ const Chat = () => {
 
     const loadMore = () => {
         if (messages.length !== 0) {
-            {fetchData(messages[0].messages.createdAt)}
+            fetchData(messages[0].messages.createdAt)
         }
     };
 
@@ -92,6 +119,9 @@ const Chat = () => {
                         <input type="text" value={sendMessage} onChange={e => {setSendMessage(e.target.value)}} />
                         <input type="submit" />
                     </form>
+                    {chats.map((chat, i) => {
+                        return <button key={i} onClick={() => {changeChatID(chat._id)}}>{chat._id}</button>
+                    })}
                     {messages.map((message, i) => {
                         return <p key={i}>{message.messages.message}</p>
                     })}

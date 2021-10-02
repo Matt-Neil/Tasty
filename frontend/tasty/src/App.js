@@ -17,8 +17,9 @@ import DessertRecipes from "./Pages/Dessert-Recipes"
 import FeedRecipes from "./Pages/Feed-Recipes"
 import Search from "./Pages/Search"
 import NewRecipe from "./Components/New-Recipe"
-import { CurrentUserContext } from './Contexts/currentUserContext';
+import OpenChat from "./Components/OpenChat"
 import Chat from './Pages/Chat';
+import { CurrentUserContext } from './Contexts/currentUserContext';
 
 export default function App() {
   const [searchPhrase, setSearchPhrase] = useState(null);
@@ -41,7 +42,7 @@ export default function App() {
           <Route path="/sign-in">
             <SignIn />
           </Route>
-          <Route path="/user/:id" render={(props) => <Account key={props.location.key} />} />
+          <Route path="/user/:id" render={(props) => <Account currentUser={currentUser} key={props.location.key} />} />
           <Route exact path="/">
             <Home currentUser={currentUser} />
           </Route>
@@ -70,7 +71,10 @@ export default function App() {
           }  
         </Switch>
       </div>
-      <NewRecipe />
+      <div className="bottomButtons">
+        <OpenChat />
+        <NewRecipe />
+      </div>
       <Footer />
     </Router>
   );

@@ -62,9 +62,10 @@ exports.getMessages = async (req, res, next) => {
                     _id: 0,
                     'messages.message': 1,
                     'messages.sender': 1,
+                    'messages.createdAt': 1
                 }
             }
-        ]).limit(20);
+        ]).limit(50);
         
         res.status(201).json({
             success: true,
@@ -79,12 +80,41 @@ exports.getMessages = async (req, res, next) => {
     }
 }
 
+exports.getCheck = async (req, res, next) => {
+    try {
+        const chat = await Chats.findOne({ $or: [{ user1: req.params.id }, { user2: req.params.id }] })
+
+        if (chat) {
+            res.status(201).json({
+                success: true,
+                data: {
+                    check: true,
+                    id: chat.id
+                }
+            })
+        } else {
+            res.status(201).json({
+                success: true,
+                data: {
+                    check: false
+                }
+            })
+        }
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({
+            success: false,
+            error: 'Server Error'
+        })
+    }
+}
+
 exports.getChats = async (req, res, next) => {
     try {
         const chat = await Chats.find({ $or: [ { user1: mongoose.Types.ObjectId(res.locals.currentUser.id) }, { user2: mongoose.Types.ObjectId(res.locals.currentUser.id) } ] }, 'user1 user2 updatedAt')
                                 .populate('user1', 'name _id')
                                 .populate('user2', 'name _id')
-                                .sort({ updatedAt: 1 });
+                                .sort({ updatedAt: -1 });
         
         res.status(201).json({
             success: true,
@@ -109,7 +139,7 @@ exports.addMessage = async (req, res, next) => {
                 error: "No Chat Found."
             })
         } else {
-            const messages = chat.messages
+            const messages = chat.messages;
             const newMessage = {
                 message: req.body.message,
                 sender: res.locals.currentUser._id
@@ -117,7 +147,8 @@ exports.addMessage = async (req, res, next) => {
 
             messages.push(newMessage)
 
-            chat.participants = chat.participants;
+            chat.user1 = chat.user1;
+            chat.user2 = chat.user2;
             chat.messages = messages;
 
             await chat.save();
@@ -138,14 +169,30 @@ exports.addMessage = async (req, res, next) => {
 
 exports.addChat = async (req, res, next) => {
     try {
-        const chat = await Chats.find({ $or: [ { user1: mongoose.Types.ObjectId(res.locals.currentUser.id) }, { user2: mongoose.Types.ObjectId(res.locals.currentUser.id) } ] }, 'user1 user2 updatedAt')
-                                .populate('user1', 'name _id')
-                                .populate('user2', 'name _id')
-                                .sort({ updatedAt: 1 });
+        await Chats.create(req.body);
         
         res.status(201).json({
-            success: true,
-            data: chat
+            success: true
+        })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({
+            success: false,
+            error: 'Server Error'
+        })
+    }
+}
+
+exports.putChat = async (req, res, next) => {
+    try {
+        const chat = await Chats.findById(req.body.id);
+
+        chat.updatedAt = new Date().toISOString()
+
+        await chat.save();
+        
+        res.status(201).json({
+            success: true
         })
     } catch (err) {
         console.log(err)

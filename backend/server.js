@@ -31,7 +31,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use('/uploads', express.static('uploads'));
 
 io.on('connect', socket => {
-    socket.emit('receiveMessage', "hshdioahshdo")
     socket.join(socket.handshake.query.id)
     socket.on('sendMessage', message => {
         io.to(socket.handshake.query.id).emit('receiveMessage', message)

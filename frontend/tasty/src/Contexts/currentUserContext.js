@@ -31,7 +31,6 @@ const CurrentUserContextProvider = (props) => {
     }, [])
 
     const changeCurrentUser = (user) => {
-        console.log(user)
         setCurrentUser(user);
     }
 
