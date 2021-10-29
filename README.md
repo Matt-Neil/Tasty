@@ -1,10 +1,15 @@
-# Getting Started with Create React App
+# Tasty - Social Media Platform For Cooking
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## Built With
 
-In the project directory, you can run:
+- [ReactJS](https://reactjs.org/)
+- [NodeJS](https://nodejs.org/en/)
+- [ExpressJS](https://expressjs.com/)
+- [MongoDB](https://www.mongodb.com/)
+- [Mongoose](https://mongoosejs.com/)
+- [Socket.IO](https://socket.io/)
 
 ### `npm start`
 
