@@ -18,8 +18,8 @@ community where people can share and discover recipes. As a university student,
 trying to find simple but healthy meals to cook can be a dull task but hopefully
 tasty can help improve this experience for everyone not only university students.
 
-![alt text](https://portfolio-matt-neil.vercel.app/Tasty-1.png)
+![Tasty Home](https://portfolio-matt-neil.vercel.app/Tasty-1.png)
 
-![alt text](https://portfolio-matt-neil.vercel.app/Tasty-2.png)
+![Tasty Recipe](https://portfolio-matt-neil.vercel.app/Tasty-2.png)
 
-![alt text](https://portfolio-matt-neil.vercel.app/Tasty-3.png)
+![Tasty Chat](https://portfolio-matt-neil.vercel.app/Tasty-3.png)
