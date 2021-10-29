@@ -20,6 +20,11 @@ tasty can help improve this experience for everyone not only university students
 
 ![Tasty Home](https://portfolio-matt-neil.vercel.app/Tasty-1.png)
 
+People can view recipes and interact with them by saving or leaving a review.
+
 ![Tasty Recipe](https://portfolio-matt-neil.vercel.app/Tasty-2.png)
+
+A chat system is also included which allows people to communicate with others as long
+as they both follow each other.
 
 ![Tasty Chat](https://portfolio-matt-neil.vercel.app/Tasty-3.png)
