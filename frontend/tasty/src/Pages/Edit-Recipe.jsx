@@ -259,7 +259,7 @@ const EditRecipe = () => {
                     <p className="text3">Picture</p>
                     {editPicture ?
                         <div className="recipeEditPicture">
-                            <img src={`http://localhost:5000/uploads/${pictureName}`} className="img3" alt="User Avatar" />
+                            <img src={`http://tasty-env.eba-c5emmwpy.eu-west-2.elasticbeanstalk.com/uploads/${pictureName}`} className="img3" alt="User Avatar" />
                             <form method="POST" onSubmit={uploadPicture} encType="multipart/form-data">
                                 <div>
                                     <input className="pictureInput" type="file" name="picture" onChange={e => {setPictureFile(e.target.files[0])}} />
@@ -273,7 +273,7 @@ const EditRecipe = () => {
                         </div>
                     :
                         <div className="recipeEditPairRow">
-                            <img src={`http://localhost:5000/uploads/${pictureName}`} className="img3" style={{marginRight: 15}} alt="User Avatar" />
+                            <img src={`http://tasty-env.eba-c5emmwpy.eu-west-2.elasticbeanstalk.com/uploads/${pictureName}`} className="img3" style={{marginRight: 15}} alt="User Avatar" />
                             <button className="recipeEdit text4" type="button" onClick={() => {setEditPicture(true)}}>Edit</button>
                         </div>
                     }
@@ -283,7 +283,7 @@ const EditRecipe = () => {
                             {editTitle ?
                                 <div className="recipeEditPairRow">
                                     <input className="textInputRecipe text5" type="text" name="title" placeholder="Title" maxLength="100" value={title} autoFocus onChange={e => {setTitle(e.target.value)}} />
-                                    {errors.title && <p className="displayError text5">{errors.title}</p> }
+                                    {errors.title !== undefined && <p className="displayError text5">{errors.title}</p> }
                                     <button className="recipeCancel text4" type="button" onClick={() => {cancelEdit("title")}}>Cancel</button>
                                 </div>
                             :
@@ -296,7 +296,7 @@ const EditRecipe = () => {
                             {editDescription ?
                                 <div className="recipeEditPairRow">
                                     <textarea className="textareaInput textInputRecipe text5" type="text" name="description" placeholder="Description" maxLength="1000" rows="8" value={description} autoFocus onChange={e => {setDescription(e.target.value)}} />
-                                    {errors.description && <p className="displayError text5">{errors.description}</p> }
+                                    {errors.description !== undefined && <p className="displayError text5">{errors.description}</p> }
                                     <button className="recipeCancel text4" type="button" onClick={() => {cancelEdit("description")}}>Cancel</button>
                                 </div>
                             :
@@ -315,7 +315,7 @@ const EditRecipe = () => {
                                                 <option value="Medium">Medium</option>
                                                 <option value="Hard">Hard</option>
                                             </select>
-                                            {errors.difficulty && <p className="displayError text5">{errors.difficulty}</p> }
+                                            {errors.difficulty !== undefined && <p className="displayError text5">{errors.difficulty}</p> }
                                             <button className="recipeCancel text4" type="button" onClick={() => {cancelEdit("difficulty")}}>Cancel</button>
                                         </div>
                                     :
@@ -333,7 +333,7 @@ const EditRecipe = () => {
                                                 <option value="Dinner">Dinner</option>
                                                 <option value="Dessert">Dessert</option>
                                             </select>
-                                            {errors.meal && <p className="displayError text5">{errors.meal}</p> } 
+                                            {errors.meal !== undefined && <p className="displayError text5">{errors.meal}</p> } 
                                             <button className="recipeCancel text4" type="button" onClick={() => {cancelEdit("meal")}}>Cancel</button>
                                         </div>
                                     :
@@ -348,7 +348,7 @@ const EditRecipe = () => {
                                     {editServings ?
                                         <div className="recipeEditPairRow">
                                             <input className="textInputRecipe text5" type="text" name="servings" placeholder="Servings" maxLength="2" value={servings} autoFocus onChange={e => {setServings(e.target.value)}} />
-                                            {errors.servings && <p className="displayError text5">{errors.servings}</p> }
+                                            {errors.servings !== undefined && <p className="displayError text5">{errors.servings}</p> }
                                             <button className="recipeCancel text4" type="button" onClick={() => {cancelEdit("servings")}}>Cancel</button>
                                         </div>
                                     :

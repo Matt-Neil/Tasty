@@ -88,9 +88,9 @@ const SignIn = ({setMessage}) => {
                         <p className="marginText text2">Welcome back!</p>
                         <div className="multipleInput">
                             <input className="textInputSignin text5" type="text" name="email" placeholder="Email" value={signinEmail} onChange={e => {setSigninEmail(e.target.value)}} />
-                            {errors.email && <p className="displayError text5" className="marginText text5">{errors.email}</p> }
+                            {errors.email !== undefined && <p className="displayError text5" className="marginText text5">{errors.email}</p> }
                             <input className="textInputSignin text5" type="password" name="password" placeholder="Password" value={signinPassword} onChange={e => {setSigninPassword(e.target.value)}} />
-                            {errors.password && <p className="displayError text5" className="marginText text5">{errors.password}</p> }
+                            {errors.password !== undefined && <p className="displayError text5" className="marginText text5">{errors.password}</p> }
                         </div>
                         <div className="formSubmit">
                             <input className="signinButton text4" type="submit" value="Sign in" />

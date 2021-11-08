@@ -217,7 +217,7 @@ const Account = ({currentUser}) => {
                                 <p className="accountNavigationItem" onClick={() => {changeSelection("followers")}}>Followers</p>
                             </div>
                             <div className="accountUserInformation">
-                                <img src={`http://localhost:5000/uploads/${user.picture}`} className="marginText img4" alt="User Avatar" />
+                                <img src={`http://tasty-env.eba-c5emmwpy.eu-west-2.elasticbeanstalk.com/uploads/${user.picture}`} className="marginText img4" alt="User Avatar" />
                                 <div>
                                     {mobile &&
                                         <div className="accountInformation text4">

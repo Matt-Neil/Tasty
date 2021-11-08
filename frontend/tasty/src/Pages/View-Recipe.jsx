@@ -62,7 +62,7 @@ const Recipe = () => {
 
             setComment("");
             setRating();
-            setErrors();
+            setErrors({rating: undefined});
         } catch (err) {
             setErrors(err.response.data.errors);
         }
@@ -111,7 +111,7 @@ const Recipe = () => {
                 <div className="innerBody">
                     <p className="recipeTitle">{recipe.title}</p>
                     <div className="recipeRow">
-                        <img src={`http://localhost:5000/uploads/${recipe.picture}`} className="img1" alt="User Avatar" />
+                        <img src={`http://tasty-env.eba-c5emmwpy.eu-west-2.elasticbeanstalk.com/uploads/${recipe.picture}`} className="img1" alt="User Avatar" />
                         <div className="recipeInformation text4">
                             <div className="recipeInformationSmall">
                                 <p className="recipeRating">{displayRating()}</p>
@@ -174,7 +174,7 @@ const Recipe = () => {
                                     <form method="POST" onSubmit={addReview}>
                                         <div className="recipeAddReview">
                                             <input className="textInputReviewRating text5" type="text" name="rating" placeholder="Rating" value={rating} onChange={e => {setRating(e.target.value)}} />
-                                            {errors.rating && <p className="displayError text5">{errors.rating}</p> }
+                                            {errors.rating !== undefined && <p className="displayError text5">{errors.rating}</p> }
                                             <textarea className="textareaInput textInputReview text5" type="text" name="comment" placeholder="Comment" maxLength="500" rows="5" onChange={e => {setComment(e.target.value)}} />
                                         </div>
                                         <div>

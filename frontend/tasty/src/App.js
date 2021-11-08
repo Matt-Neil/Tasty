@@ -62,9 +62,9 @@ export default function App() {
                     <AddRecipe />
                   </Route>
                   <Route path="/chat">
-                    <Chat />
+                    <Chat currentUser={currentUser} />
                   </Route>
-                  <Route path="/edit-recipe/:id"  render={(props) => <EditRecipe key={props.location.key} />} />
+                  <Route path="/edit-recipe/:id" render={(props) => <EditRecipe key={props.location.key} />} />
                 </>
               }
             </>

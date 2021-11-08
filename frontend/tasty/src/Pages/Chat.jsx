@@ -1,9 +1,12 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import chatsAPI from "../API/chats"
+import MessageCard from "../Components/Message-Card";
 import { ChatContext } from '../Contexts/chatContext';
+import SendIcon from '@mui/icons-material/Send';
+import ChatCard from "../Components/Chat-Card";
 const io = require("socket.io-client");
 
-const Chat = () => {
+const Chat = ({currentUser}) => {
     const [sendMessage, setSendMessage] = useState("")
     const [chat, setChat] = useState()
     const [chats, setChats] = useState()
@@ -12,6 +15,18 @@ const Chat = () => {
     const [finished, setFinished] = useState(false)
     const [socket, setSocket] = useState()
     const {chatID, changeChatID} = useContext(ChatContext);
+    const messagesRef = useRef(null)
+
+    useEffect(() => {
+        if (messagesRef.current) {
+            messagesRef.current.scrollIntoView(
+            {
+                behavior: 'auto',
+                block: 'end',
+                inline: 'nearest'
+            })
+        }
+    }, [messages, loaded])
 
     useEffect(() => {
         const fetchChats = async () => {
@@ -68,7 +83,7 @@ const Chat = () => {
 
     useEffect(() => {
         if (loaded) {
-            const newSocket = io("http://127.0.0.1:5000",
+            const newSocket = io("http://127.0.0.1:4000",
                 {
                     query: {
                         id: chatID
@@ -114,25 +129,40 @@ const Chat = () => {
     return (
         <>
             {loaded &&
-                <>
-                    <form onSubmit={sendMessageForm}>
-                        <input type="text" value={sendMessage} onChange={e => {setSendMessage(e.target.value)}} />
-                        <input type="submit" />
-                    </form>
-                    {chats.map((chat, i) => {
-                        return <button key={i} onClick={() => {changeChatID(chat._id)}}>{chat._id}</button>
-                    })}
-                    {messages.map((message, i) => {
-                        return <p key={i}>{message.messages.message}</p>
-                    })}
-                    <div className="finished">
-                        {finished ?
-                            <p className="text4">No more messages!</p>
-                            :
-                            <p className="loadMore text4" onClick={() => {loadMore()}}>Load older</p>
-                        }
+                <div className="chatBody"> 
+                    <div className="chatList">
+                        <p style={{marginTop: 0}} className="chatTitle text2">Recent chats</p>
+                        <div className="chatListUsers">
+                            {chats.map((chat, i) => {
+                                return <ChatCard key={i} chat={chat} currentUser={currentUser} />
+                            })}
+                        </div>
                     </div>
-                </>
+                    <div className="chatMessages">
+                        <div className="chatScroll">
+                            <div className="chatContainer">
+                                <div className="finishedMessages">
+                                    {finished ?
+                                        <p style={{marginBottom: 30}} className="text4">No more messages!</p>
+                                        :
+                                        <p style={{cursor: "pointer", textDecoration: "underline", marginBottom: 30}} className="text4" onClick={() => {loadMore()}}>Load older</p>
+                                    }
+                                </div>
+                                <div ref={messagesRef}>
+                                    {messages.map((message, i) => {
+                                        return (
+                                            <MessageCard key={i} chat={chat} currentUser={currentUser} message={message.messages} />
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                        <form className="messageTextForm" onSubmit={sendMessageForm}>
+                            <textarea className="messageTextInput text4" type="text" value={sendMessage} onChange={e => {setSendMessage(e.target.value)}} placeholder="Message" autoFocus />
+                            <button className="messageTextSubmit" type="submit"><SendIcon fontSize="inherit" /></button>
+                        </form>
+                    </div>
+                </div>
             }
         </>
     )

@@ -29,7 +29,6 @@ const Profile = () => {
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState({password: undefined});
     const [mobile, setMobile] = useState(window.innerWidth < 1051);
-    const history = useHistory();
 
     useEffect(() => {
         const fetchDataInitial = async () => {
@@ -114,6 +113,8 @@ const Profile = () => {
             if (pictureName !== user.picture && user.picture !== "default.png") {
                 await imageAPI.put('/remove', {picture: user.picture});
             }
+
+            console.log(password)
     
             await userAPI.put(`/profile?update=all`, 
             {
@@ -123,7 +124,7 @@ const Profile = () => {
     
             setPassword("");
             setPictureName(user.picture);
-            setErrors();
+            setErrors({password: undefined});
         } catch (err) {
             setErrors(err.response.data.errors);
         }
@@ -293,7 +294,7 @@ const Profile = () => {
                                 <p className="accountNavigationItem" onClick={() => {changeSelection("settings")}}>Settings</p>
                             </div>
                             <div className="accountUserInformation">
-                                <img src={`http://localhost:5000/uploads/${user.picture}`} className="marginText img4" alt="User Avatar" />
+                                <img src={`http://tasty-env.eba-c5emmwpy.eu-west-2.elasticbeanstalk.com/uploads/${user.picture}`} className="marginText img4" alt="User Avatar" />
                                 <div>
                                     {mobile &&
                                         <div className="accountInformation text4">
@@ -496,7 +497,7 @@ const Profile = () => {
                             <div className="middleBody">
                                 <div>
                                     <p className="marginText text3">Change profile picture</p>
-                                    <img src={`http://localhost:5000/uploads/${pictureName}`} className="img4" alt="User Avatar" style={{marginLeft: 15}} />
+                                    <img src={`http://tasty-env.eba-c5emmwpy.eu-west-2.elasticbeanstalk.com/uploads/${pictureName}`} className="img4" alt="User Avatar" style={{marginLeft: 15}} />
                                     <form method="POST" onSubmit={uploadPicture} encType="multipart/form-data">
                                         <div>
                                             <input className="pictureInput" type="file" name="picture" onChange={e => {setPictureFile(e.target.files[0])}} />
@@ -509,7 +510,6 @@ const Profile = () => {
                                     <p className="marginText text3">Change password</p>
                                     <form method="POST" onSubmit={updateUser}>
                                         <div>
-                                            {errors.password && <p className="displayError text5">{errors.password}</p> }
                                             <input className="textInputAccount text5" type="password" name="password" placeholder="New password" onChange={e => {setPassword(e.target.value)}} />
                                         </div>
                                         <div>

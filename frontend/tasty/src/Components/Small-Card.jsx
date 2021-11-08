@@ -22,7 +22,7 @@ const SmallCard = ({recipeReducer}) => {
 
     return (
         <div className="smallCard">
-            <img src={`http://localhost:5000/uploads/${recipeReducer.picture}`} className="img5" alt="Recipe Small" />
+            <img src={`http://tasty-env.eba-c5emmwpy.eu-west-2.elasticbeanstalk.com/uploads/${recipeReducer.picture}`} className="img5" alt="Recipe Small" />
             <p className="smallCardTitle text4">{recipeReducer.title}</p>
             <div className="smallCardInformation text6">
                 <p className="smallCardRating">{rating()}</p>

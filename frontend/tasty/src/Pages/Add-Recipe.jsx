@@ -113,7 +113,7 @@ const AddRecipe = () => {
             setDescription("");
             setDifficulty("");
             setMeal("");
-            setErrors();
+            setErrors({ rating: undefined, title: undefined, servings: undefined, description: undefined, difficulty: undefined, meal: undefined });
 
             history.push(`/recipes/${updateResponse.data.data}`);
         } catch (err) {
@@ -172,7 +172,7 @@ const AddRecipe = () => {
             <div className="innerBody">
                 <p className="text3">Picture</p>
                 <div className="recipeEditPicture">
-                    <img src={`http://localhost:5000/uploads/${pictureName}`} className="recipeEditDisplayPicture img3" alt="User Avatar" />
+                    <img src={`http://tasty-env.eba-c5emmwpy.eu-west-2.elasticbeanstalk.com/uploads/${pictureName}`} className="recipeEditDisplayPicture img3" alt="User Avatar" />
                     <form method="POST" onSubmit={uploadPicture} encType="multipart/form-data">
                         <div>
                             <input className="pictureInput" type="file" name="picture" onChange={e => {setPictureFile(e.target.files[0])}} />
@@ -188,12 +188,12 @@ const AddRecipe = () => {
                         <p className="text3">Title</p>
                         <div className="recipeEditPairRow">
                             <input className="textInputRecipe text5" type="text" name="title" placeholder="Title" maxLength="100" value={title} onChange={e => {setTitle(e.target.value)}} />
-                            {errors.title && <p className="displayError text5">{errors.title}</p> }
+                            {errors.title !== undefined && <p className="displayError text5">{errors.title}</p> }
                         </div>
                         <p className="text3">Description</p>
                         <div className="recipeEditPairRow">
                             <textarea className="textareaInput textInputRecipe text5" type="text" name="description" placeholder="Description" maxLength="1000" rows="8" value={description} autoFocus onChange={e => {setDescription(e.target.value)}} />
-                            {errors.description && <p className="displayError text5">{errors.description}</p> }
+                            {errors.description !== undefined && <p className="displayError text5">{errors.description}</p> }
                         </div>
                         <div className="recipeEditRow">
                             <div className="recipeEditRowDifficulty">
@@ -204,7 +204,7 @@ const AddRecipe = () => {
                                         <option value="Medium">Medium</option>
                                         <option value="Hard">Hard</option>
                                     </select>
-                                    {errors.difficulty && <p className="displayError text5">{errors.difficulty}</p> }
+                                    {errors.difficulty !== undefined && <p className="displayError text5">{errors.difficulty}</p> }
                                 </div>
                             </div>
                             <div className="recipeEditRowMeal">
@@ -214,14 +214,14 @@ const AddRecipe = () => {
                                         <option value="Dinner">Dinner</option>
                                         <option value="Dessert">Dessert</option>
                                     </select>
-                                    {errors.meal && <p className="displayError text5">{errors.meal}</p> } 
+                                    {errors.meal !== undefined && <p className="displayError text5">{errors.meal}</p> } 
                                 </div>
                             </div>
                             <div className="recipeEditRowServings">
                                 <p className="text3">Number of servings</p>
                                 <div className="recipeEditPairRow">
                                     <input className="textInputRecipe text5" type="text" name="servings" placeholder="Servings" maxLength="2" value={servings} autoFocus onChange={e => {setServings(e.target.value)}} />
-                                    {errors.servings && <p className="displayError text5">{errors.servings}</p> }
+                                    {errors.servings !== undefined && <p className="displayError text5">{errors.servings}</p> }
                                 </div>
                             </div>
                         </div>

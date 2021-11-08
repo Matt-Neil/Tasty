@@ -1,6 +1,6 @@
 import axios from "axios";
 
 export default axios.create({
-    baseURL: "http://localhost:5000/api/user",
+    baseURL: "http://tasty-env.eba-c5emmwpy.eu-west-2.elasticbeanstalk.com/api/user",
     withCredentials: true
 });
