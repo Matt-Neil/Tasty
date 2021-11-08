@@ -7,6 +7,7 @@ import LargeCard from "../Components/Large-Card"
 import MediumCard from "../Components/Medium-Card"
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import axios from "axios";
 
 const Home = ({currentUser}) => {
     const [discoverRecipes, setDiscoverRecipes] = useState();
@@ -42,8 +43,11 @@ const Home = ({currentUser}) => {
                 const latest = await recipesAPI.get("/latest");
                 const dinner = await recipesAPI.get("/short/dinner");
                 const dessert = await recipesAPI.get("/short/dessert")
-                
-                console.log(discover)
+
+                axios.get("tasty-env.eba-c5emmwpy.eu-west-2.elasticbeanstalk.com/api/recipes/discover")
+                    .then((response) => {
+                        console.log(response.data.data)
+                    })
 
                 if (!currentUser.empty && currentUser.loaded) {
                     const feed = await userAPI.get("/short/feed");
