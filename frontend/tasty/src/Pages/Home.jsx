@@ -60,6 +60,8 @@ const Home = ({currentUser}) => {
         fetchData();
     }, [])
 
+    console.log(discoverRecipes)
+
     useEffect(() => {
         window.addEventListener("resize", updateMedia);
         return () => window.removeEventListener("resize", updateMedia);
