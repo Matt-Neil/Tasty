@@ -41,7 +41,9 @@ const Home = ({currentUser}) => {
                 const discover = await recipesAPI.get("/discover");
                 const latest = await recipesAPI.get("/latest");
                 const dinner = await recipesAPI.get("/short/dinner");
-                const dessert = await recipesAPI.get("/short/dessert");
+                const dessert = await recipesAPI.get("/short/dessert")
+                
+                console.log(discover)
 
                 if (!currentUser.empty && currentUser.loaded) {
                     const feed = await userAPI.get("/short/feed");
@@ -59,8 +61,6 @@ const Home = ({currentUser}) => {
         }
         fetchData();
     }, [])
-
-    console.log(discoverRecipes)
 
     useEffect(() => {
         window.addEventListener("resize", updateMedia);
