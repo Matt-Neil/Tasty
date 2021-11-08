@@ -6,7 +6,7 @@ import SmallCard from "../Components/Small-Card"
 import LargeCard from "../Components/Large-Card"
 import MediumCard from "../Components/Medium-Card"
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';public
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import axios from "axios";
 
 const Home = ({currentUser}) => {
