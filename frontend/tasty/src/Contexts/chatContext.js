@@ -3,7 +3,7 @@ import React, {createContext, useEffect, useState} from 'react'
 export const ChatContext = createContext()
 
 const ChatContextProvider = (props) => {
-    const [chatID, setChatID] = useState(undefined);
+    const [chatID, setChatID] = useState("");
 
     useEffect(() => {
         const localData = JSON.parse(localStorage.getItem('chatID'));

@@ -33,7 +33,7 @@ const Chat = ({currentUser}) => {
             try {
                 const chats = await chatsAPI.get(`/`);
     
-                if (chatID === undefined) {
+                if (chatID === "") {
                     changeChatID(chats.data.data[0]._id)
                 }
                 setChats(chats.data.data)
@@ -83,7 +83,7 @@ const Chat = ({currentUser}) => {
 
     useEffect(() => {
         if (loaded) {
-            const newSocket = io("http://127.0.0.1:4000",
+            const newSocket = io("https://tasty-env.eba-c5emmwpy.eu-west-2.elasticbeanstalk.com",
                 {
                     query: {
                         id: chatID
