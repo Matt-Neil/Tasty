@@ -46,7 +46,7 @@ const Home = ({currentUser}) => {
 
                 axios.get("tasty-env.eba-c5emmwpy.eu-west-2.elasticbeanstalk.com/api/recipes/discover")
                     .then((response) => {
-                        console.log(response.data.data)
+                        console.log(response)
                     })
 
                 if (!currentUser.empty && currentUser.loaded) {
