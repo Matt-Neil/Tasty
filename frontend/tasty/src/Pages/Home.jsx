@@ -6,7 +6,7 @@ import SmallCard from "../Components/Small-Card"
 import LargeCard from "../Components/Large-Card"
 import MediumCard from "../Components/Medium-Card"
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';public
 import axios from "axios";
 
 const Home = ({currentUser}) => {
@@ -44,7 +44,7 @@ const Home = ({currentUser}) => {
                 const dinner = await recipesAPI.get("/short/dinner");
                 const dessert = await recipesAPI.get("/short/dessert")
 
-                axios.get("tasty-env.eba-c5emmwpy.eu-west-2.elasticbeanstalk.com/api/recipes/discover")
+                axios.get("http://tasty-env.eba-c5emmwpy.eu-west-2.elasticbeanstalk.com/api/recipes/discover")
                     .then((response) => {
                         console.log(response)
                     })
